@@ -45,8 +45,10 @@ public class VeinMiningLogic {
     Block source = sourceState.getBlock();
     boolean notCorrect = VeinMiningConfig.SERVER.requireCorrectTool.get() &&
         !Services.PLATFORM.canHarvestDrops(playerEntity, sourceState);
+    float destroySpeed = stack.getDestroySpeed(sourceState);
+    // Check for destroySpeed > 0.0 to auto-include items that have non-native break logic
     boolean tooSlow =
-        stack.getDestroySpeed(sourceState) < VeinMiningConfig.SERVER.requiredDestroySpeed.get();
+        destroySpeed > 0.0F && destroySpeed < VeinMiningConfig.SERVER.requiredDestroySpeed.get();
 
     if (notCorrect || tooSlow) {
       return;
