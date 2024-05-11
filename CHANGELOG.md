@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 Prior to version 1.0.0, this project used MCVERSION-MAJORMOD.MAJORAPI.MINOR.PATCH.
 
+## [4.0.0+1.20.6] - 2024.05.10
+### Changed
+- Updated to Minecraft 1.20.6
+- Updated to SpectreLib 0.16.1
+- Changed `rarity` configuration option to `weight` and `anvilCost`
+- Expanded `minEnchantabilityBase` and `minEnchantabilityPerLevel` configuration options into `minCostBase`, `minCostPerLevel`,
+`maxCostBase`, and `maxCostPerLevel`
+- [Fabric] Changed default items to use vanilla tags instead of modded tags
+### Removed
+- Removed `groupsList` configuration option
+
 ## [3.1.1+1.20.4] - 2024.04.29
 ### Fixed
 - Fixed destroy speed logic for modded tools
