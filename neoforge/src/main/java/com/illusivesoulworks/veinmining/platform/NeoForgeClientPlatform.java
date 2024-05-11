@@ -17,7 +17,7 @@
 
 package com.illusivesoulworks.veinmining.platform;
 
-import com.illusivesoulworks.veinmining.common.network.StatePayload;
+import com.illusivesoulworks.veinmining.common.network.CPacketState;
 import com.illusivesoulworks.veinmining.common.platform.services.IClientPlatform;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningKey;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -34,6 +34,6 @@ public class NeoForgeClientPlatform implements IClientPlatform {
 
   @Override
   public void sendC2SState(boolean enabled) {
-    PacketDistributor.SERVER.noArg().send(new StatePayload(enabled));
+    PacketDistributor.sendToServer(new CPacketState(enabled));
   }
 }

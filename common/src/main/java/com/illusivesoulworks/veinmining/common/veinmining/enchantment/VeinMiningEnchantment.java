@@ -17,34 +17,36 @@
 
 package com.illusivesoulworks.veinmining.common.veinmining.enchantment;
 
+import com.illusivesoulworks.veinmining.VeinMiningConstants;
 import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
-import com.illusivesoulworks.veinmining.common.platform.Services;
 import javax.annotation.Nonnull;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 
 public class VeinMiningEnchantment extends Enchantment {
 
+  private static final TagKey<Item> TAG = TagKey.create(Registries.ITEM,
+      new ResourceLocation(VeinMiningConstants.MOD_ID, "vein_mining"));
+
   public VeinMiningEnchantment() {
-    super(Rarity.RARE, Services.PLATFORM.getEnchantmentCategory(),
-        new EquipmentSlot[] {EquipmentSlot.MAINHAND});
-  }
-
-  public static boolean canEnchant(Item item) {
-
-    for (String entry : VeinMiningConfig.COMMON.itemsList.getTransformed()) {
-      ResourceLocation resourceLocation = ResourceLocation.tryParse(entry);
-
-      if (resourceLocation != null &&
-          Services.PLATFORM.getItem(resourceLocation).map(found -> found == item).orElse(false)) {
-        return true;
-      }
-    }
-    return item instanceof DiggerItem;
+    super(
+        Enchantment.definition(
+            TAG,
+            VeinMiningConfig.COMMON.weight.get(),
+            VeinMiningConfig.COMMON.levels.get(),
+            Enchantment.dynamicCost(VeinMiningConfig.COMMON.minCostBase.get(),
+                VeinMiningConfig.COMMON.minCostPerLevel.get()),
+            Enchantment.dynamicCost(VeinMiningConfig.COMMON.maxCostBase.get(),
+                VeinMiningConfig.COMMON.maxCostPerLevel.get()),
+            VeinMiningConfig.COMMON.anvilCost.get(),
+            EquipmentSlot.MAINHAND
+        )
+    );
   }
 
   private static boolean canEnchantStack(ItemStack stack) {
@@ -56,28 +58,6 @@ public class VeinMiningEnchantment extends Enchantment {
       }
     }
     return false;
-  }
-
-  @Nonnull
-  @Override
-  public Rarity getRarity() {
-    return VeinMiningConfig.COMMON.rarity.get();
-  }
-
-  @Override
-  public int getMaxLevel() {
-    return VeinMiningConfig.COMMON.levels.get();
-  }
-
-  @Override
-  public int getMinCost(int enchantmentLevel) {
-    return VeinMiningConfig.COMMON.minEnchantabilityBase.get() +
-        VeinMiningConfig.COMMON.minEnchantabilityPerLevel.get() * (enchantmentLevel - 1);
-  }
-
-  @Override
-  public int getMaxCost(int enchantmentLevel) {
-    return this.getMinCost(enchantmentLevel) + 50;
   }
 
   @Override
@@ -103,7 +83,7 @@ public class VeinMiningEnchantment extends Enchantment {
 
   @Override
   public boolean canEnchant(@Nonnull ItemStack stack) {
-    return canEnchantStack(stack);
+    return stack.is(this.getSupportedItems()) || canEnchantStack(stack);
   }
 
   public boolean canApplyAtEnchantingTable(@Nonnull ItemStack stack) {

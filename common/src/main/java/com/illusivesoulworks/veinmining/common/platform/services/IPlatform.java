@@ -17,7 +17,6 @@
 
 package com.illusivesoulworks.veinmining.common.platform.services;
 
-import com.illusivesoulworks.veinmining.common.veinmining.enchantment.VeinMiningEnchantment;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,27 +28,16 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 public interface IPlatform {
-
-  Set<String> getBlocksFromTag(ResourceLocation resourceLocation);
-
-  EnchantmentCategory getEnchantmentCategory();
 
   Enchantment getVeinMiningEnchantment();
 
   Optional<Enchantment> getEnchantment(ResourceLocation resourceLocation);
 
   Optional<Item> getItem(ResourceLocation resourceLocation);
-
-  Optional<Block> getBlock(ResourceLocation resourceLocation);
-
-  Optional<ResourceLocation> getResourceLocation(Enchantment enchantment);
-
-  Optional<ResourceLocation> getResourceLocation(Item item);
 
   Optional<ResourceLocation> getResourceLocation(Block block);
 
@@ -62,6 +50,4 @@ public interface IPlatform {
   Set<String> getItemsFromTag(ResourceLocation resourceLocation);
 
   List<String> getDefaultItemsConfig();
-
-  List<String> getDefaultGroups();
 }

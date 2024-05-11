@@ -19,7 +19,8 @@ package com.illusivesoulworks.veinmining;
 
 import com.illusivesoulworks.veinmining.client.NeoForgeClientEventsListener;
 import com.illusivesoulworks.veinmining.common.NeoForgeCommonEventsListener;
-import com.illusivesoulworks.veinmining.common.network.StatePayload;
+import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
+import com.illusivesoulworks.veinmining.common.network.CPacketState;
 import com.illusivesoulworks.veinmining.common.network.VeinMiningServerPayloadHandler;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningKey;
 import com.illusivesoulworks.veinmining.common.veinmining.enchantment.VeinMiningEnchantment;
@@ -29,12 +30,13 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 @Mod(VeinMiningConstants.MOD_ID)
@@ -47,16 +49,17 @@ public class VeinMiningNeoForgeMod {
           VeinMiningEnchantment::new);
 
   public VeinMiningNeoForgeMod(IEventBus eventBus) {
-    VeinMiningMod.init();
+    VeinMiningConfig.setup();
     ENCHANTMENTS.register(eventBus);
     eventBus.addListener(this::setup);
     eventBus.addListener(this::clientSetup);
     eventBus.addListener(this::registerPayloadHandler);
   }
 
-  private void registerPayloadHandler(final RegisterPayloadHandlerEvent evt) {
-    evt.registrar(VeinMiningConstants.MOD_ID).play(StatePayload.ID, StatePayload::new,
-        handler -> handler.server(VeinMiningServerPayloadHandler.getInstance()::handleState));
+  private void registerPayloadHandler(final RegisterPayloadHandlersEvent evt) {
+    evt.registrar(VeinMiningConstants.MOD_ID)
+        .playToServer(CPacketState.TYPE, CPacketState.STREAM_CODEC,
+            VeinMiningServerPayloadHandler.getInstance()::handleState);
   }
 
   private void setup(final FMLCommonSetupEvent evt) {
@@ -67,7 +70,7 @@ public class VeinMiningNeoForgeMod {
     NeoForge.EVENT_BUS.register(new NeoForgeClientEventsListener());
   }
 
-  @Mod.EventBusSubscriber(modid = VeinMiningConstants.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+  @EventBusSubscriber(modid = VeinMiningConstants.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
   public static class ClientModEvents {
 
     @SubscribeEvent

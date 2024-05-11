@@ -19,6 +19,7 @@ package com.illusivesoulworks.veinmining;
 
 import com.illusivesoulworks.veinmining.client.ForgeClientEventsListener;
 import com.illusivesoulworks.veinmining.common.ForgeCommonEventsListener;
+import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
 import com.illusivesoulworks.veinmining.common.network.VeinMiningForgeNetwork;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningKey;
 import com.illusivesoulworks.veinmining.common.veinmining.enchantment.VeinMiningEnchantment;
@@ -46,7 +47,7 @@ public class VeinMiningForgeMod {
           VeinMiningEnchantment::new);
 
   public VeinMiningForgeMod() {
-    VeinMiningMod.init();
+    VeinMiningConfig.setup();
     IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
     ENCHANTMENTS.register(eventBus);
     eventBus.addListener(this::setup);

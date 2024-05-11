@@ -17,6 +17,8 @@
 
 package com.illusivesoulworks.veinmining.common.config;
 
+import com.illusivesoulworks.spectrelib.config.SpectreConfig;
+import com.illusivesoulworks.spectrelib.config.SpectreConfigLoader;
 import com.illusivesoulworks.spectrelib.config.SpectreConfigSpec;
 import com.illusivesoulworks.veinmining.VeinMiningConstants;
 import com.illusivesoulworks.veinmining.common.platform.Services;
@@ -54,6 +56,13 @@ public class VeinMiningConfig {
     CLIENT = specPairClient.getLeft();
   }
 
+  public static void setup() {
+    String id = VeinMiningConstants.MOD_ID;
+    SpectreConfigLoader.add(SpectreConfig.Type.SERVER, VeinMiningConfig.SERVER_SPEC, id);
+    SpectreConfigLoader.add(SpectreConfig.Type.COMMON, VeinMiningConfig.COMMON_SPEC, id);
+    SpectreConfigLoader.add(SpectreConfig.Type.CLIENT, VeinMiningConfig.CLIENT_SPEC, id);
+  }
+
   public static class Server {
 
     public final SpectreConfigSpec.DoubleValue requiredDestroySpeed;
@@ -73,9 +82,6 @@ public class VeinMiningConfig {
     public final SpectreConfigSpec.TransformableValue<List<? extends String>, Set<String>>
         blocksList;
     public final SpectreConfigSpec.EnumValue<ListType> blocksListType;
-
-    public final SpectreConfigSpec.TransformableValue<List<? extends String>, Set<String>>
-        groupsList;
 
     public Server(SpectreConfigSpec.Builder builder) {
 
@@ -162,36 +168,38 @@ public class VeinMiningConfig {
           builder.comment("Determines if blocksList contains allowed blocks or denied blocks.")
               .translation(CONFIG_PREFIX + "blocksListType")
               .defineEnum("blocksListType", ListType.ALLOW);
-
-      groupsList =
-          builder.comment("The groups of blocks or block tags that are vein mined together.")
-              .translation(CONFIG_PREFIX + "groupsList")
-              .defineList("groupsList", generateDefaultGroups(), s -> s instanceof String,
-                  Set::copyOf);
     }
   }
 
   public static class Common {
 
-    public final SpectreConfigSpec.EnumValue<Enchantment.Rarity> rarity;
+    public final SpectreConfigSpec.IntValue weight;
+    public final SpectreConfigSpec.IntValue anvilCost;
     public final SpectreConfigSpec.IntValue levels;
     public final SpectreConfigSpec.BooleanValue isTreasure;
     public final SpectreConfigSpec.BooleanValue isVillagerTrade;
     public final SpectreConfigSpec.BooleanValue isLootable;
     public final SpectreConfigSpec.BooleanValue canApplyAtEnchantingTable;
     public final SpectreConfigSpec.BooleanValue canApplyOnBooks;
-    public final SpectreConfigSpec.IntValue minEnchantabilityBase;
-    public final SpectreConfigSpec.IntValue minEnchantabilityPerLevel;
+    public final SpectreConfigSpec.IntValue minCostBase;
+    public final SpectreConfigSpec.IntValue minCostPerLevel;
+    public final SpectreConfigSpec.IntValue maxCostBase;
+    public final SpectreConfigSpec.IntValue maxCostPerLevel;
     public final SpectreConfigSpec.TransformableValue<List<? extends String>, Set<Enchantment>>
         incompatibleEnchantments;
     public final SpectreConfigSpec.TransformableValue<List<? extends String>, Set<String>>
         itemsList;
 
     public Common(SpectreConfigSpec.Builder builder) {
+      weight = builder.comment(
+              "The relative weight used for rarity of the enchantment. Higher values result in more frequent appearances.")
+          .translation(CONFIG_PREFIX + "weight")
+          .defineInRange("weight", 2, 1, 20);
 
-      rarity = builder.comment("The rarity of the enchantment.")
-          .translation(CONFIG_PREFIX + "rarity")
-          .defineEnum("rarity", net.minecraft.world.item.enchantment.Enchantment.Rarity.RARE);
+      anvilCost =
+          builder.comment("The cost, in levels, of applying the enchantment using an anvil.")
+              .translation(CONFIG_PREFIX + "anvilCost")
+              .defineInRange("anvilCost", 4, 0, 100);
 
       levels = builder.comment("The number of levels of the enchantment.")
           .translation(CONFIG_PREFIX + "levels")
@@ -220,15 +228,27 @@ public class VeinMiningConfig {
           .translation(CONFIG_PREFIX + "canApplyOnBooks")
           .define("canApplyOnBooks", true);
 
-      minEnchantabilityBase =
+      minCostBase =
           builder.comment("The minimum enchantability required for the first enchantment level.")
-              .translation(CONFIG_PREFIX + "minEnchantabilityBase")
-              .defineInRange("minEnchantabilityBase", 15, 1, 100);
+              .translation(CONFIG_PREFIX + "minCostBase")
+              .defineInRange("minCostBase", 15, 1, 100);
 
-      minEnchantabilityPerLevel = builder.comment(
-              "The additional enchantability required for each enchantment level after the first.")
-          .translation(CONFIG_PREFIX + "minEnchantabilityPerLevel")
-          .defineInRange("minEnchantabilityPerLevel", 5, 1, 100);
+      minCostPerLevel =
+          builder.comment(
+                  "The minimum enchantability required for each enchantment level after the first.")
+              .translation(CONFIG_PREFIX + "minCostPerLevel")
+              .defineInRange("minCostPerLevel", 9, 0, 100);
+
+      maxCostBase =
+          builder.comment("The maximum enchantability required for the first enchantment level.")
+              .translation(CONFIG_PREFIX + "maxCostBase")
+              .defineInRange("maxCostBase", 65, 1, 100);
+
+      maxCostPerLevel =
+          builder.comment(
+                  "The maximum enchantability required for each enchantment level after the first.")
+              .translation(CONFIG_PREFIX + "maxCostPerLevel")
+              .defineInRange("maxCostPerLevel", 9, 0, 100);
 
       incompatibleEnchantments = builder
           .comment("Enchantments that cannot be applied together with the enchantment.")
@@ -272,10 +292,6 @@ public class VeinMiningConfig {
           .translation(CONFIG_PREFIX + "activationStateWithoutEnchantment")
           .defineEnum("activationStateWithoutEnchantment", ActivationState.HOLD_KEY_DOWN);
     }
-  }
-
-  public static List<String> generateDefaultGroups() {
-    return Services.PLATFORM.getDefaultGroups();
   }
 
   public enum ListType {

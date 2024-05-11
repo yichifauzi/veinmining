@@ -20,7 +20,7 @@ package com.illusivesoulworks.veinmining.mixin.core;
 import com.illusivesoulworks.veinmining.mixin.VeinMiningFabricMixinHooks;
 import java.util.Iterator;
 import java.util.List;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -35,25 +35,27 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 public class MixinEnchantmentHelper {
 
   @Inject(
-      method = "getAvailableEnchantmentResults(ILnet/minecraft/world/item/ItemStack;Z)Ljava/util/List;",
+      method = "getAvailableEnchantmentResults",
       at = @At(
           value = "INVOKE_ASSIGN",
           target = "Ljava/util/List;add(Ljava/lang/Object;)Z"),
       locals = LocalCapture.CAPTURE_FAILSOFT)
-  private static void veinmining$removeVeinMiningEnchantment(int level, ItemStack stack,
+  private static void veinmining$removeVeinMiningEnchantment(FeatureFlagSet enabledFeatures,
+                                                             int level, ItemStack stack,
                                                              boolean allowTreasure,
                                                              CallbackInfoReturnable<List<EnchantmentInstance>> cir,
                                                              List<EnchantmentInstance> list,
-                                                             Item item, boolean isBook,
+                                                             boolean isBook,
                                                              Iterator<Enchantment> iter,
                                                              Enchantment enchantment) {
     VeinMiningFabricMixinHooks.removeEnchantment(list, enchantment);
   }
 
   @Inject(
-      method = "getAvailableEnchantmentResults(ILnet/minecraft/world/item/ItemStack;Z)Ljava/util/List;",
+      method = "getAvailableEnchantmentResults",
       at = @At("RETURN"))
-  private static void veinmining$addVeinMiningEnchantment(int level, ItemStack stack,
+  private static void veinmining$addVeinMiningEnchantment(FeatureFlagSet enabledFeatures,
+                                                          int level, ItemStack stack,
                                                           boolean allowTreasure,
                                                           CallbackInfoReturnable<List<EnchantmentInstance>> cir) {
     VeinMiningFabricMixinHooks.addEnchantment(level, stack, allowTreasure, cir.getReturnValue());

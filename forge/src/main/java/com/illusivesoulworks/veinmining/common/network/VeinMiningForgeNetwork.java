@@ -44,14 +44,17 @@ public class VeinMiningForgeNetwork {
         .serverAcceptedVersions(Channel.VersionTest.exact(PTC_VERSION)).simpleChannel();
 
     // Client-to-Server
-    registerC2S(CPacketState.class, CPacketState::encode, CPacketState::decode,
+    registerC2S(CPacketState.class, CPacketState.STREAM_CODEC::encode,
+        CPacketState.STREAM_CODEC::decode,
         (cPacketState, serverPlayer) -> CPacketState.handle(cPacketState.activate(), serverPlayer));
   }
 
-  public static <M> void registerC2S(Class<M> messageType, BiConsumer<M, FriendlyByteBuf> encoder,
+  public static <M> void registerC2S(Class<M> messageType, BiConsumer<FriendlyByteBuf, M> encoder,
                                      Function<FriendlyByteBuf, M> decoder,
                                      BiConsumer<M, ServerPlayer> messageConsumer) {
-    instance.messageBuilder(messageType).decoder(decoder).encoder(encoder)
+    instance.messageBuilder(messageType)
+        .decoder(decoder)
+        .encoder(((m, friendlyByteBuf) -> encoder.accept(friendlyByteBuf, m)))
         .consumerNetworkThread((m, context) -> {
           context.enqueueWork(() -> {
             ServerPlayer sender = context.getSender();

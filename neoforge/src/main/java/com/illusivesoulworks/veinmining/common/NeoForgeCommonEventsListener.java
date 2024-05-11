@@ -26,17 +26,17 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 public class NeoForgeCommonEventsListener {
 
   @SubscribeEvent
   @SuppressWarnings("unused")
-  public void levelTick(final TickEvent.LevelTickEvent evt) {
-    VeinMiningEvents.tick(evt.level);
+  public void levelTick(final LevelTickEvent.Post evt) {
+    VeinMiningEvents.tick(evt.getLevel());
   }
 
   @SubscribeEvent

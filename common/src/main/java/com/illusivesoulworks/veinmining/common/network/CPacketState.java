@@ -17,19 +17,25 @@
 
 package com.illusivesoulworks.veinmining.common.network;
 
+import com.illusivesoulworks.veinmining.VeinMiningConstants;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningPlayers;
+import javax.annotation.Nonnull;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
-public record CPacketState(boolean activate) {
+public record CPacketState(boolean activate) implements CustomPacketPayload {
 
-  public static void encode(CPacketState msg, FriendlyByteBuf buf) {
-    buf.writeBoolean(msg.activate);
-  }
-
-  public static CPacketState decode(FriendlyByteBuf buf) {
-    return new CPacketState(buf.readBoolean());
-  }
+  public static final Type<CPacketState> TYPE =
+      new Type<>(new ResourceLocation(VeinMiningConstants.MOD_ID, "state"));
+  public static final StreamCodec<FriendlyByteBuf, CPacketState> STREAM_CODEC =
+      StreamCodec.composite(
+          ByteBufCodecs.BOOL,
+          CPacketState::activate,
+          CPacketState::new);
 
   public static void handle(boolean activate, ServerPlayer player) {
 
@@ -38,5 +44,11 @@ public record CPacketState(boolean activate) {
     } else {
       VeinMiningPlayers.deactivateVeinMining(player);
     }
+  }
+
+  @Nonnull
+  @Override
+  public Type<? extends CustomPacketPayload> type() {
+    return TYPE;
   }
 }

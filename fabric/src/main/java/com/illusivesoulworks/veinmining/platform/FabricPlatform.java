@@ -22,7 +22,6 @@ import com.illusivesoulworks.veinmining.VeinMiningFabricMod;
 import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
 import com.illusivesoulworks.veinmining.common.platform.services.IPlatform;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningPlayers;
-import com.illusivesoulworks.veinmining.common.veinmining.enchantment.VeinMiningEnchantment;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +41,6 @@ import net.minecraft.world.food.FoodData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -51,25 +49,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class FabricPlatform implements IPlatform {
-
-  @Override
-  public Set<String> getBlocksFromTag(ResourceLocation resourceLocation) {
-    Set<String> result = new HashSet<>();
-    BuiltInRegistries.BLOCK.getTag(TagKey.create(Registries.BLOCK, resourceLocation))
-        .ifPresent(block -> {
-          for (Holder<Block> blockHolder : block) {
-            blockHolder.unwrapKey().ifPresent(key -> result.add(key.location().toString()));
-          }
-        });
-    return result;
-  }
-
-  @Override
-  public EnchantmentCategory getEnchantmentCategory() {
-    return EnchantmentCategory.DIGGER;
-  }
-
-
 
   @Override
   public Enchantment getVeinMiningEnchantment() {
@@ -84,21 +63,6 @@ public class FabricPlatform implements IPlatform {
   @Override
   public Optional<Item> getItem(ResourceLocation resourceLocation) {
     return Optional.of(BuiltInRegistries.ITEM.get(resourceLocation));
-  }
-
-  @Override
-  public Optional<Block> getBlock(ResourceLocation resourceLocation) {
-    return Optional.of(BuiltInRegistries.BLOCK.get(resourceLocation));
-  }
-
-  @Override
-  public Optional<ResourceLocation> getResourceLocation(Enchantment enchantment) {
-    return Optional.ofNullable(BuiltInRegistries.ENCHANTMENT.getKey(enchantment));
-  }
-
-  @Override
-  public Optional<ResourceLocation> getResourceLocation(Item item) {
-    return Optional.of(BuiltInRegistries.ITEM.getKey(item));
   }
 
   @Override
@@ -193,76 +157,6 @@ public class FabricPlatform implements IPlatform {
 
   @Override
   public List<String> getDefaultItemsConfig() {
-    return Arrays.asList("#c:axes", "#c:pickaxes", "#c:shovels", "#c:hoes");
-  }
-
-  @Override
-  public List<String> getDefaultGroups() {
-    return Arrays.asList(
-        "#c:adamantite_ores",
-        "#c:aetherium_ores",
-        "#c:aluminum_ores",
-        "#c:amethyst_ores",
-        "#c:antimony_ores",
-        "#c:aquarium_ores",
-        "#c:asterite_ores",
-        "#c:banglum_ores",
-        "#c:bauxite_ores",
-        "#c:carmot_ores",
-        "#c:certus_quartz_ores",
-        "#c:cinnabar_ores",
-        "#c:coal_ores",
-        "#c:cobalt_ores",
-        "#c:copper_ores",
-        "#c:diamond_ores",
-        "#c:emerald_ores",
-        "#c:galaxium_ores",
-        "#c:galena_ores",
-        "#c:gold_ores,#minecraft:gold_ores",
-        "#c:iridium_ores",
-        "#c:iron_ores",
-        "#c:kyber_ores",
-        "#c:lapis_ores",
-        "#c:lead_ores",
-        "#c:lunum_ores",
-        "#c:lutetium_ores",
-        "#c:manganese_ores",
-        "#c:metite_ores",
-        "#c:mythril_ores",
-        "#c:nickel_ores",
-        "#c:orichalcum_ores",
-        "#c:osmium_ores",
-        "#c:palladium_ores",
-        "#c:peridot_ores",
-        "#c:platinum_ores",
-        "#c:prometheum_ores",
-        "#c:pyrite_ores",
-        "#c:quadrillum_ores",
-        "#c:quartz_ores",
-        "#c:redstone_ores",
-        "#c:ruby_ores",
-        "#c:runite_ores",
-        "#c:salt_ores",
-        "#c:sapphire_ores",
-        "#c:sheldonite_ores",
-        "#c:silver_ores",
-        "#c:sodalite_ores",
-        "#c:sphalerite_ores",
-        "#c:starrite_ores",
-        "#c:stellum_ores",
-        "#c:stormyx_ores",
-        "#c:sulfur_ores",
-        "#c:tantalite_ores",
-        "#c:tin_ores",
-        "#c:titanium_ores",
-        "#c:topaz_ores",
-        "#c:truesilver_ores",
-        "#c:tungsten_ores",
-        "#c:unobtainium_ores",
-        "#c:ur_ores",
-        "#c:uranium_ores",
-        "#c:vermiculite_ores",
-        "#c:zinc_ores"
-    );
+    return Arrays.asList("#minecraft:axes", "#minecraft:pickaxes", "#minecraft:shovels", "#minecraft:hoes");
   }
 }

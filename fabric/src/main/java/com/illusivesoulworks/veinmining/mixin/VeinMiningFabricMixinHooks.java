@@ -17,7 +17,6 @@
 
 package com.illusivesoulworks.veinmining.mixin;
 
-import com.illusivesoulworks.veinmining.VeinMiningMod;
 import com.illusivesoulworks.veinmining.common.platform.Services;
 import com.illusivesoulworks.veinmining.common.veinmining.enchantment.VeinMiningEnchantment;
 import java.util.List;
@@ -31,7 +30,7 @@ public class VeinMiningFabricMixinHooks {
   public static void removeEnchantment(List<EnchantmentInstance> list, Enchantment enchantment) {
 
     if (enchantment == Services.PLATFORM.getVeinMiningEnchantment()) {
-      list.remove(list.size() - 1);
+      list.removeLast();
     }
   }
 

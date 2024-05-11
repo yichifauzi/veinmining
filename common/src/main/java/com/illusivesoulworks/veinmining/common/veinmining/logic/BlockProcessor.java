@@ -21,7 +21,6 @@ import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
 import com.illusivesoulworks.veinmining.common.platform.Services;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -39,7 +38,6 @@ public class BlockProcessor {
     checkedBlocks.clear();
     checkedPairs.clear();
     checkedTags.clear();
-    BlockGroups.init();
   }
 
   public static boolean isValidTarget(BlockState state, Block source) {
@@ -158,6 +156,6 @@ public class BlockProcessor {
     if (originName.isEmpty() || targetName.isEmpty()) {
       return false;
     }
-    return BlockGroups.getGroup(originName).contains(targetName);
+    return originName.equals(targetName);
   }
 }

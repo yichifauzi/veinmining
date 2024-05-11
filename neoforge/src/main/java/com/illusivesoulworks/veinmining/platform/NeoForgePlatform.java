@@ -18,12 +18,10 @@
 package com.illusivesoulworks.veinmining.platform;
 
 import com.google.common.collect.ImmutableMap;
-import com.illusivesoulworks.veinmining.VeinMiningConstants;
 import com.illusivesoulworks.veinmining.VeinMiningNeoForgeMod;
 import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
 import com.illusivesoulworks.veinmining.common.platform.services.IPlatform;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningPlayers;
-import com.illusivesoulworks.veinmining.common.veinmining.enchantment.VeinMiningEnchantment;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -45,7 +43,6 @@ import net.minecraft.world.food.FoodData;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -61,27 +58,6 @@ import net.neoforged.neoforge.event.EventHooks;
 
 public class NeoForgePlatform implements IPlatform {
 
-  private static final EnchantmentCategory CATEGORY =
-      EnchantmentCategory.create(VeinMiningConstants.ENCHANTMENT_ID.toString(),
-          VeinMiningEnchantment::canEnchant);
-
-  @Override
-  public Set<String> getBlocksFromTag(ResourceLocation resourceLocation) {
-    Set<String> result = new HashSet<>();
-    BuiltInRegistries.BLOCK.getTagOrEmpty(TagKey.create(Registries.BLOCK, resourceLocation))
-        .forEach(holder -> {
-          Block block = holder.value();
-          ResourceLocation rl = BuiltInRegistries.BLOCK.getKey(block);
-          result.add(rl.toString());
-        });
-    return result;
-  }
-
-  @Override
-  public EnchantmentCategory getEnchantmentCategory() {
-    return CATEGORY;
-  }
-
   @Override
   public Enchantment getVeinMiningEnchantment() {
     return VeinMiningNeoForgeMod.ENCHANTMENT.get();
@@ -95,21 +71,6 @@ public class NeoForgePlatform implements IPlatform {
   @Override
   public Optional<Item> getItem(ResourceLocation resourceLocation) {
     return Optional.of(BuiltInRegistries.ITEM.get(resourceLocation));
-  }
-
-  @Override
-  public Optional<Block> getBlock(ResourceLocation resourceLocation) {
-    return Optional.of(BuiltInRegistries.BLOCK.get(resourceLocation));
-  }
-
-  @Override
-  public Optional<ResourceLocation> getResourceLocation(Enchantment enchantment) {
-    return Optional.ofNullable(BuiltInRegistries.ENCHANTMENT.getKey(enchantment));
-  }
-
-  @Override
-  public Optional<ResourceLocation> getResourceLocation(Item item) {
-    return Optional.of(BuiltInRegistries.ITEM.getKey(item));
   }
 
   @Override
@@ -228,38 +189,6 @@ public class NeoForgePlatform implements IPlatform {
   @Override
   public List<String> getDefaultItemsConfig() {
     return Arrays.asList("is:tool", "quark:pickarang", "quark:flamerang");
-  }
-
-  @Override
-  public List<String> getDefaultGroups() {
-    return Arrays.asList(
-        "#forge:obsidian",
-        "#forge:ores/coal",
-        "#forge:ores/diamond",
-        "#forge:ores/emerald",
-        "#forge:ores/gold",
-        "#forge:ores/iron",
-        "#forge:ores/lapis",
-        "#forge:ores/redstone",
-        "#forge:ores/quartz",
-        "#forge:ores/netherite_scrap",
-        "#forge:ores/copper",
-        "#forge:ores/tin",
-        "#forge:ores/osmium",
-        "#forge:ores/uranium",
-        "#forge:ores/fluorite",
-        "#forge:ores/lead",
-        "#forge:ores/zinc",
-        "#forge:ores/aluminum",
-        "#forge:ores/nickel",
-        "#forge:ores/silver",
-        "#forge:ores/apatite",
-        "#forge:ores/cinnabar",
-        "#forge:ores/niter",
-        "#forge:ores/ruby",
-        "#forge:ores/sapphire",
-        "#forge:ores/sulfur"
-    );
   }
 
   private static boolean removeBlock(Player player, BlockPos pos, boolean canHarvest) {

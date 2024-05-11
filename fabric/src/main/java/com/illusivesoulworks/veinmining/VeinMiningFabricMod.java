@@ -24,18 +24,17 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.enchantment.Enchantment;
 
 public class VeinMiningFabricMod implements ModInitializer {
 
-  public static final ResourceLocation STATE_PACKET =
-      new ResourceLocation(VeinMiningConstants.MOD_ID, "state");
   public static Enchantment VEIN_MINING_ENCHANTMENT;
 
   @Override
@@ -54,10 +53,15 @@ public class VeinMiningFabricMod implements ModInitializer {
         VeinMiningEvents.blockBreak(serverPlayer, pos, state);
       }
     });
-    ServerPlayNetworking.registerGlobalReceiver(STATE_PACKET,
-        (server, player, handler, buf, responseSender) -> {
-          CPacketState msg = CPacketState.decode(buf);
-          server.execute(() -> CPacketState.handle(msg.activate(), player));
-        });
+    PayloadTypeRegistry.playC2S().register(CPacketState.TYPE, CPacketState.STREAM_CODEC);
+    ServerPlayNetworking.registerGlobalReceiver(CPacketState.TYPE, (payload, context) -> {
+      ServerPlayer player = context.player();
+      MinecraftServer server = player.getServer();
+      boolean activate = payload.activate();
+
+      if (server != null) {
+        server.execute(() -> CPacketState.handle(activate, player));
+      }
+    });
   }
 }

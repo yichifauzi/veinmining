@@ -18,16 +18,13 @@
 package com.illusivesoulworks.veinmining.client;
 
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 public class NeoForgeClientEventsListener {
 
   @SubscribeEvent
   @SuppressWarnings("unused")
-  public void veinMiningState(final TickEvent.ClientTickEvent evt) {
-
-    if (evt.phase == TickEvent.Phase.END) {
-      VeinMiningClientEvents.tick();
-    }
+  public void veinMiningState(final ClientTickEvent.Post evt) {
+    VeinMiningClientEvents.tick();
   }
 }

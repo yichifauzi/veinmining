@@ -28,15 +28,25 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(Block.class)
-public class BlockMixin {
+public class MixinBlock {
 
-  @ModifyVariable(at = @At("HEAD"), method = "popResource(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/item/ItemStack;)V", argsOnly = true)
+  @ModifyVariable(
+      at = @At("HEAD"),
+      method = "popResource(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/item/ItemStack;)V",
+      argsOnly = true,
+      require = 1
+  )
   private static BlockPos veinmining$popResource(BlockPos pos, Level level, BlockPos unused,
                                                  ItemStack stack) {
     return VeinMiningMixinHooks.getActualSpawnPos(level, pos);
   }
 
-  @ModifyVariable(at = @At("HEAD"), method = "popResourceFromFace", argsOnly = true)
+  @ModifyVariable(
+      at = @At("HEAD"),
+      method = "popResourceFromFace",
+      argsOnly = true,
+      require = 1
+  )
   private static BlockPos veinmining$popResourceFromFace(BlockPos pos, Level level, BlockPos unused,
                                                          Direction direction, ItemStack stack) {
     return VeinMiningMixinHooks.getActualSpawnPos(level, pos);

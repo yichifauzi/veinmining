@@ -4,8 +4,6 @@ import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningPlayers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
@@ -15,8 +13,8 @@ public class VeinMiningMixinHooks {
     return VeinMiningPlayers.getNewSpawnPosForDrop(level, pos).orElse(pos);
   }
 
-  public static <T extends LivingEntity> boolean shouldCancelItemDamage(T entity) {
-    return entity instanceof Player player && VeinMiningPlayers.isVeinMining(player) &&
+  public static boolean shouldCancelItemDamage(ServerPlayer serverPlayer) {
+    return VeinMiningPlayers.isVeinMining(serverPlayer) &&
         !VeinMiningConfig.SERVER.addToolDamage.get();
   }
 
