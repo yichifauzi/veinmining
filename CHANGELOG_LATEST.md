@@ -2,13 +2,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 This is a copy of the changelog for the most recent version. For the full version history, go [here](https://github.com/illusivesoulworks/veinmining/blob/1.20.x/CHANGELOG.md).
 
-## [4.0.0+1.20.6] - 2024.05.10
-### Changed
-- Updated to Minecraft 1.20.6
-- Updated to SpectreLib 0.16.1
-- Changed `rarity` configuration option to `weight` and `anvilCost`
-- Expanded `minEnchantabilityBase` and `minEnchantabilityPerLevel` configuration options into `minCostBase`, `minCostPerLevel`,
-  `maxCostBase`, and `maxCostPerLevel`
-- [Fabric] Changed default items to use vanilla tags instead of modded tags
-### Removed
-- Removed `groupsList` configuration option
+## [4.0.1+1.20.6] - 2024.05.11
+### Fixed
+- Fixed NPE crash when certain items are used by non-players [#127](https://github.com/illusivesoulworks/veinmining/issues/127)
