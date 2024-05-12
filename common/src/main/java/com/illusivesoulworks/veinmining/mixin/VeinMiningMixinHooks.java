@@ -14,7 +14,7 @@ public class VeinMiningMixinHooks {
   }
 
   public static boolean shouldCancelItemDamage(ServerPlayer serverPlayer) {
-    return VeinMiningPlayers.isVeinMining(serverPlayer) &&
+    return serverPlayer != null && VeinMiningPlayers.isVeinMining(serverPlayer) &&
         !VeinMiningConfig.SERVER.addToolDamage.get();
   }
 
