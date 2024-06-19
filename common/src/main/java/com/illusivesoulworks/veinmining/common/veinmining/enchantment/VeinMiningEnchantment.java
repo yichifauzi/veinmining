@@ -19,6 +19,7 @@ package com.illusivesoulworks.veinmining.common.veinmining.enchantment;
 
 import com.illusivesoulworks.veinmining.VeinMiningConstants;
 import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -31,7 +32,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 public class VeinMiningEnchantment extends Enchantment {
 
   private static final TagKey<Item> TAG = TagKey.create(Registries.ITEM,
-      new ResourceLocation(VeinMiningConstants.MOD_ID, "vein_mining"));
+      new ResourceLocation(VeinMiningConstants.MOD_ID, "enchantable/vein_mining"));
 
   public VeinMiningEnchantment() {
     super(
@@ -92,5 +93,9 @@ public class VeinMiningEnchantment extends Enchantment {
 
   public boolean isAllowedOnBooks() {
     return VeinMiningConfig.COMMON.canApplyOnBooks.get();
+  }
+
+  public boolean allowedInCreativeTab(Item book, Set<TagKey<Item>> allowedCategories) {
+    return this.isAllowedOnBooks();
   }
 }

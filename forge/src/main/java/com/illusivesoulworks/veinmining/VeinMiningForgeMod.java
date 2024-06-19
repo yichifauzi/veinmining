@@ -23,10 +23,18 @@ import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
 import com.illusivesoulworks.veinmining.common.network.VeinMiningForgeNetwork;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningKey;
 import com.illusivesoulworks.veinmining.common.veinmining.enchantment.VeinMiningEnchantment;
+import java.util.ArrayList;
+import java.util.List;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -52,6 +60,7 @@ public class VeinMiningForgeMod {
     ENCHANTMENTS.register(eventBus);
     eventBus.addListener(this::setup);
     eventBus.addListener(this::clientSetup);
+    eventBus.addListener(this::buildCreativeTabs);
   }
 
   private void setup(final FMLCommonSetupEvent evt) {
@@ -61,6 +70,33 @@ public class VeinMiningForgeMod {
 
   private void clientSetup(final FMLClientSetupEvent evt) {
     MinecraftForge.EVENT_BUS.register(new ForgeClientEventsListener());
+  }
+
+  private void buildCreativeTabs(final BuildCreativeModeTabContentsEvent evt) {
+
+    if (evt.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+      Enchantment registered = ENCHANTMENT.get();
+
+      if (registered.isEnabled(evt.getFlags())) {
+
+        if (registered instanceof VeinMiningEnchantment enchantment &&
+            enchantment.isAllowedOnBooks()) {
+          EnchantedBookItem.createForEnchantment(
+              new EnchantmentInstance(enchantment, enchantment.getMaxLevel()));
+          List<ItemStack> stacks = new ArrayList<>();
+
+          for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); i++) {
+            stacks.add(
+                EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, i)));
+          }
+
+          for (ItemStack stack : stacks) {
+            evt.accept(stack, CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY);
+          }
+          evt.accept(stacks.getLast(), CreativeModeTab.TabVisibility.PARENT_TAB_ONLY);
+        }
+      }
+    }
   }
 
   @Mod.EventBusSubscriber(modid = VeinMiningConstants.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
