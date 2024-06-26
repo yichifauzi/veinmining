@@ -4,6 +4,11 @@
   "key.veinmining.category": "Vein Mining",
   "key.veinmining.activate.desc": "Activate Vein Mining",
   "key.veinmining.activate.error": "(Disabled by Configuration)",
+  "tutorial.veinmining.enchantment.standing": "Crouch to stop vein mining.",
+  "tutorial.veinmining.enchantment.crouching": "Crouch to vein mine.",
+  "tutorial.veinmining.enchantment.key": "Hold %s to vein mine.",
+  "tutorial.veinmining.key.no_configuration": "Your vein mining configuration does not use key bindings.",
+  "tutorial.veinmining.key.no_enchantment": "You need the §3Vein Mining §fenchantment on your tool to vein mine.",
   "gui.veinmining.config.requiredDestroySpeed.name": "Required destroy speed",
   "gui.veinmining.config.requiredDestroySpeed.description": "The minimum destroy speed the used tool needs on the block to vein mine.",
   "gui.veinmining.config.requireCorrectTool.name": "Require correct tool",
@@ -59,7 +64,11 @@
   "gui.veinmining.config.itemsList.name": "Enchantable items",
   "gui.veinmining.config.itemsList.description": "Items that the enchantment can be applied on.",
   "gui.veinmining.config.activationState.name": "Activate vein mining (maxBlocksBase = 0)",
-  "gui.veinmining.config.activationState.description": "If maxBlocksBase is 0, determines how to activate vein mining.",
+  "gui.veinmining.config.activationState.description": "If maxBlocksBase is 0, determines how to activate vein mining.\nIMPORTANT: When using the \"HOLD_KEY_DOWN\" setting, remember to set a key binding by going to Options > Controls > Key Binds.",
   "gui.veinmining.config.activationStateWithoutEnchantment.name": "Activate vein mining (maxBlocksBase > 0)",
-  "gui.veinmining.config.activationStateWithoutEnchantment.description": "If maxBlocksBase is greater than 0, determines how to activate vein mining."
+  "gui.veinmining.config.activationStateWithoutEnchantment.description": "If maxBlocksBase is greater than 0, determines how to activate vein mining.\nIMPORTANT: When using the \"HOLD_KEY_DOWN\" setting, remember to set a key binding by going to Options > Controls > Key Binds.",
+  "gui.veinmining.config.enchantmentTutorialMode.name": "Enchantment tutorial",
+  "gui.veinmining.config.enchantmentTutorialMode.description": "The type of instructions that will show when using Vein Mining tools.\nALL - All instruction types will be shown.\nTOOLTIP_ONLY - Instructions will only be shown through item tooltips.\nNOTIFICATION_ONLY - Instructions will only be shown through equip notifications.\nNONE - No instructions will be shown.",
+  "gui.veinmining.config.enableEnchantmentWarnings.name": "Enchantment warnings",
+  "gui.veinmining.config.enableEnchantmentWarnings.description": "If enabled, users will be sent warnings about improper enchantment usage."
 }

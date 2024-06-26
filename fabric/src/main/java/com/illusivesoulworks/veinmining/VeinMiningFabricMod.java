@@ -20,6 +20,7 @@ package com.illusivesoulworks.veinmining;
 import com.illusivesoulworks.veinmining.common.network.CPacketState;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningEvents;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
@@ -50,6 +51,9 @@ public class VeinMiningFabricMod implements ModInitializer {
         VeinMiningEvents.blockBreak(serverPlayer, pos, state);
       }
     });
+    ServerEntityEvents.EQUIPMENT_CHANGE.register(
+        (livingEntity, equipmentSlot, previousStack, currentStack) -> VeinMiningEvents.toolEquip(
+            currentStack, previousStack, equipmentSlot, livingEntity));
     ServerPlayNetworking.registerGlobalReceiver(STATE_PACKET,
         (server, player, handler, buf, responseSender) -> {
           CPacketState msg = CPacketState.decode(buf);

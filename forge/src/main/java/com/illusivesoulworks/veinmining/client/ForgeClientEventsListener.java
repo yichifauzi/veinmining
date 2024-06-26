@@ -17,7 +17,17 @@
 
 package com.illusivesoulworks.veinmining.client;
 
+import com.illusivesoulworks.veinmining.VeinMiningMod;
+import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
+import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningKey;
+import java.util.List;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ForgeClientEventsListener {
@@ -29,5 +39,11 @@ public class ForgeClientEventsListener {
     if (evt.phase == TickEvent.Phase.END) {
       VeinMiningClientEvents.tick();
     }
+  }
+
+  @SubscribeEvent
+  @SuppressWarnings("unused")
+  public void itemTooltip(final ItemTooltipEvent evt) {
+    VeinMiningClientEvents.tooltip(evt.getItemStack(), evt.getToolTip());
   }
 }

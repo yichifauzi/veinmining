@@ -22,6 +22,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
+import org.quiltmc.qsl.tooltip.api.client.ItemTooltipCallback;
 
 public class VeinMiningQuiltClientMod implements ClientModInitializer {
 
@@ -30,5 +31,7 @@ public class VeinMiningQuiltClientMod implements ClientModInitializer {
     VeinMiningKey.setup();
     KeyBindingHelper.registerKeyBinding(VeinMiningKey.get());
     ClientTickEvents.END.register(client -> VeinMiningClientEvents.tick());
+    ItemTooltipCallback.EVENT.register(
+        (stack, player, context, lines) -> VeinMiningClientEvents.tooltip(stack, lines));
   }
 }

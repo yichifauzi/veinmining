@@ -17,12 +17,22 @@
 
 package com.illusivesoulworks.veinmining.client;
 
+import com.illusivesoulworks.veinmining.VeinMiningMod;
 import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
 import com.illusivesoulworks.veinmining.common.platform.ClientServices;
+import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningEvents;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningKey;
+import java.util.List;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 
 public class VeinMiningClientEvents {
 
@@ -35,19 +45,72 @@ public class VeinMiningClientEvents {
 
       if (world.getGameTime() % 5 == 0) {
         boolean enabled;
+        boolean needsEnchantment = VeinMiningConfig.SERVER.maxBlocksBase.get() == 0;
         VeinMiningConfig.ActivationState activationState =
-            VeinMiningConfig.SERVER.maxBlocksBase.get() > 0 ?
-                VeinMiningConfig.CLIENT.activationStateWithoutEnchantment.get() :
-                VeinMiningConfig.CLIENT.activationState.get();
+            needsEnchantment ? VeinMiningConfig.CLIENT.activationState.get() :
+                VeinMiningConfig.CLIENT.activationStateWithoutEnchantment.get();
+        boolean isKeyDown = VeinMiningKey.get().isDown();
+
+        if (VeinMiningConfig.CLIENT.enableEnchantmentWarnings.get() && isKeyDown) {
+
+          if (activationState != VeinMiningConfig.ActivationState.HOLD_KEY_DOWN) {
+            player.displayClientMessage(
+                Component.translatable("tutorial.veinmining.key.no_configuration"), true);
+          } else if (needsEnchantment &&
+              EnchantmentHelper.getItemEnchantmentLevel(VeinMiningMod.ENCHANTMENT,
+                  player.getMainHandItem()) == 0) {
+            player.displayClientMessage(
+                Component.translatable("tutorial.veinmining.key.no_enchantment"), true);
+          }
+        }
 
         if (activationState == VeinMiningConfig.ActivationState.STANDING) {
           enabled = !player.isCrouching();
         } else if (activationState == VeinMiningConfig.ActivationState.CROUCHING) {
           enabled = player.isCrouching();
         } else {
-          enabled = VeinMiningKey.get().isDown();
+          enabled = isKeyDown;
         }
         ClientServices.PLATFORM.sendC2SState(enabled);
+      }
+    }
+  }
+
+  public static void tooltip(ItemStack stack, List<Component> tooltip) {
+    boolean needsEnchantment = VeinMiningConfig.SERVER.maxBlocksBase.get() == 0;
+
+    if (needsEnchantment && !(stack.getItem() instanceof EnchantedBookItem)) {
+      VeinMiningConfig.TutorialMode mode = VeinMiningConfig.CLIENT.enchantmentTutorialMode.get();
+
+      if (mode == VeinMiningConfig.TutorialMode.ALL ||
+          mode == VeinMiningConfig.TutorialMode.TOOLTIP_ONLY) {
+        int level = EnchantmentHelper.getItemEnchantmentLevel(VeinMiningMod.ENCHANTMENT, stack);
+
+        if (level > 0) {
+          MutableComponent component = VeinMiningEvents.getTutorialMessage();
+          component.withStyle(ChatFormatting.DARK_AQUA);
+          int index = tooltip.size();
+
+          for (int i = 0; i < tooltip.size(); i++) {
+            Component component1 = tooltip.get(i);
+
+            if (component1 instanceof MutableComponent mutableComponent &&
+                mutableComponent.getContents() instanceof TranslatableContents contents1) {
+
+              if (contents1.getKey().startsWith("item.modifiers.")) {
+                index = i;
+                break;
+              }
+
+              if (contents1.getKey().startsWith("enchantments.")) {
+                index = i;
+                break;
+              }
+            }
+          }
+          tooltip.add(index, component);
+          tooltip.add(index + 1, Component.empty());
+        }
       }
     }
   }

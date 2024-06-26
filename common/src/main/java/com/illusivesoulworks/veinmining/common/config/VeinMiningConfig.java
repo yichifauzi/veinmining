@@ -252,6 +252,8 @@ public class VeinMiningConfig {
     public final SpectreConfigSpec.EnumValue<VeinMiningConfig.ActivationState> activationState;
     public final SpectreConfigSpec.EnumValue<VeinMiningConfig.ActivationState>
         activationStateWithoutEnchantment;
+    public final SpectreConfigSpec.BooleanValue enableEnchantmentWarnings;
+    public final SpectreConfigSpec.EnumValue<TutorialMode> enchantmentTutorialMode;
 
     public Client(SpectreConfigSpec.Builder builder) {
 
@@ -266,11 +268,34 @@ public class VeinMiningConfig {
               IMPORTANT: When using the "HOLD_KEY_DOWN" setting, remember to set a keybinding by going to Options > Controls > Key Binds.""")
           .translation(CONFIG_PREFIX + "activationStateWithoutEnchantment")
           .defineEnum("activationStateWithoutEnchantment", ActivationState.HOLD_KEY_DOWN);
+
+      enableEnchantmentWarnings = builder
+          .comment(
+              "If enabled, users will be sent warnings about improper enchantment usage.")
+          .translation(CONFIG_PREFIX + "enableEnchantmentWarnings")
+          .define("enableEnchantmentWarnings", true);
+
+      enchantmentTutorialMode = builder
+          .comment("""
+              The type of instructions that will show when using Vein Mining tools.
+              ALL - All instruction types will be shown.
+              TOOLTIP_ONLY - Instructions will only be shown through item tooltips.
+              NOTIFICATION_ONLY - Instructions will only be shown through equip notifications.
+              NONE - No instructions will be shown.""")
+          .translation(CONFIG_PREFIX + "enchantmentTutorialMode")
+          .defineEnum("enchantmentTutorialMode", TutorialMode.TOOLTIP_ONLY);
     }
   }
 
   public static List<String> generateDefaultGroups() {
     return Services.PLATFORM.getDefaultGroups();
+  }
+
+  public enum TutorialMode {
+    ALL,
+    TOOLTIP_ONLY,
+    NOTIFICATION_ONLY,
+    NONE
   }
 
   public enum ListType {

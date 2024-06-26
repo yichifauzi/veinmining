@@ -4,7 +4,12 @@ plugins {
     id 'maven-publish'
 }
 
-archivesBaseName = "${mod_id}-common"
+version = "${version}"
+group = "top.theillusivec4.${mod_id}"
+
+base {
+    archivesName = "${mod_id}-common"
+}
 
 minecraft {
     version(minecraft_version)

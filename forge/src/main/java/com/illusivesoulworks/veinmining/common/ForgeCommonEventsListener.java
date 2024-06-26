@@ -17,14 +17,25 @@
 
 package com.illusivesoulworks.veinmining.common;
 
+import com.illusivesoulworks.veinmining.VeinMiningMod;
+import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningEvents;
+import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningKey;
 import javax.annotation.Nonnull;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.EnchantedBookItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
@@ -70,6 +81,11 @@ public class ForgeCommonEventsListener {
     if (evt.getPlayer() instanceof ServerPlayer player) {
       VeinMiningEvents.blockBreak(player, evt.getPos(), evt.getState());
     }
+  }
+
+  @SubscribeEvent
+  public void toolEquip(final LivingEquipmentChangeEvent evt) {
+    VeinMiningEvents.toolEquip(evt.getTo(), evt.getFrom(), evt.getSlot(), evt.getEntity());
   }
 
   @SubscribeEvent
