@@ -255,13 +255,15 @@ public class VeinMiningConfig {
 
     public Client(SpectreConfigSpec.Builder builder) {
 
-      activationState = builder.comment(
-              "If maxBlocksBase is 0, determines how to activate vein mining.")
+      activationState = builder.comment("""
+              If maxBlocksBase is 0, determines how to activate vein mining.
+              IMPORTANT: When using the "HOLD_KEY_DOWN" setting, remember to set a keybinding by going to Options > Controls > Key Binds.""")
           .translation(CONFIG_PREFIX + "activationState")
           .defineEnum("activationState", ActivationState.STANDING);
 
-      activationStateWithoutEnchantment = builder.comment(
-              "If maxBlocksBase is greater than 0, determines how to activate vein mining.")
+      activationStateWithoutEnchantment = builder.comment("""
+              If maxBlocksBase is greater than 0, determines how to activate vein mining.
+              IMPORTANT: When using the "HOLD_KEY_DOWN" setting, remember to set a keybinding by going to Options > Controls > Key Binds.""")
           .translation(CONFIG_PREFIX + "activationStateWithoutEnchantment")
           .defineEnum("activationStateWithoutEnchantment", ActivationState.HOLD_KEY_DOWN);
     }
