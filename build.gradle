@@ -62,7 +62,6 @@ subprojects {
             name = 'Illusive Soulworks'
             url = 'https://maven.theillusivec4.top/'
         }
-        mavenLocal()
     }
 
     tasks.withType(JavaCompile).configureEach {

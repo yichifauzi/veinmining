@@ -6,7 +6,12 @@ plugins {
     id 'com.modrinth.minotaur' version '2.+'
 }
 
-archivesBaseName = "${mod_id}-quilt"
+version = "${version}"
+group = "top.theillusivec4.${mod_id}"
+
+base {
+    archivesName = "${mod_id}-quilt"
+}
 
 repositories {
     maven {
