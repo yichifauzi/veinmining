@@ -17,22 +17,9 @@
 
 package com.illusivesoulworks.veinmining.common;
 
-import com.illusivesoulworks.veinmining.VeinMiningMod;
-import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
+import com.illusivesoulworks.veinmining.common.data.BlockGroupsResourceListener;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningEvents;
-import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningKey;
-import javax.annotation.Nonnull;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
-import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.EnchantedBookItem;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
@@ -53,23 +40,12 @@ public class ForgeCommonEventsListener {
   @SubscribeEvent
   @SuppressWarnings("unused")
   public void reload(final AddReloadListenerEvent evt) {
-    evt.addListener(new SimplePreparableReloadListener<Void>() {
-      @Nonnull
-      @Override
-      protected Void prepare(@Nonnull ResourceManager resourceManagerIn,
-                             @Nonnull ProfilerFiller profilerIn) {
-        return null;
-      }
-
-      @Override
-      protected void apply(@Nonnull Void objectIn, @Nonnull ResourceManager resourceManagerIn,
-                           @Nonnull ProfilerFiller profilerIn) {
-        VeinMiningEvents.reloadDatapack();
-      }
-    });
+    BlockGroupsResourceListener.INSTANCE = new BlockGroupsResourceListener();
+    evt.addListener(BlockGroupsResourceListener.INSTANCE);
   }
 
   @SubscribeEvent
+  @SuppressWarnings("unused")
   public void serverStarted(final ServerStartedEvent evt) {
     VeinMiningEvents.reloadDatapack();
   }

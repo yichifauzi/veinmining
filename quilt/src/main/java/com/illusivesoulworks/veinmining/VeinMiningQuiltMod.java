@@ -17,20 +17,23 @@
 
 package com.illusivesoulworks.veinmining;
 
+import com.illusivesoulworks.veinmining.common.data.BlockGroupsResourceListener;
 import com.illusivesoulworks.veinmining.common.network.CPacketState;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningEvents;
+import com.illusivesoulworks.veinmining.data.QuiltBlockGroupsResourceListener;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.PackType;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.ModInitializer;
 import org.quiltmc.qsl.lifecycle.api.event.ServerLifecycleEvents;
 import org.quiltmc.qsl.lifecycle.api.event.ServerWorldTickEvents;
 import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
-import org.quiltmc.qsl.resource.loader.api.ResourceLoaderEvents;
+import org.quiltmc.qsl.resource.loader.api.ResourceLoader;
 
 public class VeinMiningQuiltMod implements ModInitializer {
 
@@ -42,8 +45,11 @@ public class VeinMiningQuiltMod implements ModInitializer {
     Registry.register(BuiltInRegistries.ENCHANTMENT, VeinMiningConstants.ENCHANTMENT_ID,
         VeinMiningMod.ENCHANTMENT);
     ServerLifecycleEvents.READY.register(server -> VeinMiningEvents.reloadDatapack());
-    ResourceLoaderEvents.END_DATA_PACK_RELOAD.register(
-        context -> VeinMiningEvents.reloadDatapack());
+    ResourceLoader resourceManagerHelper = ResourceLoader.get(PackType.SERVER_DATA);
+    QuiltBlockGroupsResourceListener quiltBlockGroupsResourceListener =
+        new QuiltBlockGroupsResourceListener();
+    BlockGroupsResourceListener.INSTANCE = quiltBlockGroupsResourceListener;
+    resourceManagerHelper.registerReloader(quiltBlockGroupsResourceListener);
     ServerWorldTickEvents.END.register((server, world) -> VeinMiningEvents.tick(world));
     PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, blockEntity) -> {
       if (player instanceof ServerPlayer serverPlayer) {

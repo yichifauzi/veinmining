@@ -19,9 +19,12 @@ package com.illusivesoulworks.veinmining.common.veinmining.logic;
 
 
 import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
+import com.illusivesoulworks.veinmining.common.data.BlockGroupsResourceListener;
 import com.illusivesoulworks.veinmining.common.platform.Services;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.resources.ResourceLocation;
@@ -34,13 +37,18 @@ public class BlockGroups {
   public static synchronized void init() {
     BLOCK_TO_GROUP.clear();
     VeinMiningConfig.SERVER.groupsList.clearCache();
+    List<Set<String>> groups = new ArrayList<>(BlockGroupsResourceListener.INSTANCE.getGroups());
 
     for (String group : VeinMiningConfig.SERVER.groupsList.getTransformed()) {
       String[] ids = group.split(",");
-      Set<String> blockGroup = createGroup(ids);
+      groups.add(new HashSet<>(List.of(ids)));
+    }
+
+    for (Set<String> group : groups) {
+      Set<String> blockGroup = createGroup(group);
 
       for (String blockId : blockGroup) {
-        BLOCK_TO_GROUP.merge(blockId, blockGroup, (s1, s2) -> {
+        BLOCK_TO_GROUP.merge(blockId, new HashSet<>(blockGroup), (s1, s2) -> {
           s1.addAll(s2);
           return s1;
         });
@@ -52,7 +60,7 @@ public class BlockGroups {
     return BLOCK_TO_GROUP.getOrDefault(id, new HashSet<>());
   }
 
-  private static Set<String> createGroup(String[] ids) {
+  private static Set<String> createGroup(Set<String> ids) {
     Set<String> newGroup = new HashSet<>();
 
     for (String id : ids) {
