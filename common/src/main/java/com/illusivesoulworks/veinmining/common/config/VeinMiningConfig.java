@@ -253,18 +253,19 @@ public class VeinMiningConfig {
     public final SpectreConfigSpec.EnumValue<VeinMiningConfig.ActivationState>
         activationStateWithoutEnchantment;
     public final SpectreConfigSpec.BooleanValue enableEnchantmentWarnings;
-    public final SpectreConfigSpec.EnumValue<TutorialMode> enchantmentTutorialMode;
+    public final SpectreConfigSpec.BooleanValue enableEnchantmentTooltips;
+    public final SpectreConfigSpec.BooleanValue enableEnchantmentNotifications;
 
     public Client(SpectreConfigSpec.Builder builder) {
 
       activationState = builder.comment("""
-              If maxBlocksBase is 0, determines how to activate vein mining.
+              If maxBlocksBase from veinmining-server.toml is 0, determines how to activate vein mining.
               IMPORTANT: When using the "HOLD_KEY_DOWN" setting, remember to set a keybinding by going to Options > Controls > Key Binds.""")
           .translation(CONFIG_PREFIX + "activationState")
           .defineEnum("activationState", ActivationState.STANDING);
 
       activationStateWithoutEnchantment = builder.comment("""
-              If maxBlocksBase is greater than 0, determines how to activate vein mining.
+              If maxBlocksBase from veinmining-server.toml is greater than 0, determines how to activate vein mining.
               IMPORTANT: When using the "HOLD_KEY_DOWN" setting, remember to set a keybinding by going to Options > Controls > Key Binds.""")
           .translation(CONFIG_PREFIX + "activationStateWithoutEnchantment")
           .defineEnum("activationStateWithoutEnchantment", ActivationState.HOLD_KEY_DOWN);
@@ -275,27 +276,22 @@ public class VeinMiningConfig {
           .translation(CONFIG_PREFIX + "enableEnchantmentWarnings")
           .define("enableEnchantmentWarnings", true);
 
-      enchantmentTutorialMode = builder
-          .comment("""
-              The type of instructions that will show when using Vein Mining tools.
-              ALL - All instruction types will be shown.
-              TOOLTIP_ONLY - Instructions will only be shown through item tooltips.
-              NOTIFICATION_ONLY - Instructions will only be shown through equip notifications.
-              NONE - No instructions will be shown.""")
-          .translation(CONFIG_PREFIX + "enchantmentTutorialMode")
-          .defineEnum("enchantmentTutorialMode", TutorialMode.TOOLTIP_ONLY);
+      enableEnchantmentTooltips = builder
+          .comment(
+              "If enabled, instructions on how to vein mine will appear in the tooltip of enchanted items.")
+          .translation(CONFIG_PREFIX + "enableEnchantmentTooltips")
+          .define("enableEnchantmentTooltips", true);
+
+      enableEnchantmentNotifications = builder
+          .comment(
+              "If enabled, instructions on how to vein mine will appear above the hotbar when switching to enchanted items.")
+          .translation(CONFIG_PREFIX + "enableEnchantmentNotifications")
+          .define("enableEnchantmentNotifications", false);
     }
   }
 
   public static List<String> generateDefaultGroups() {
     return Services.PLATFORM.getDefaultGroups();
-  }
-
-  public enum TutorialMode {
-    ALL,
-    TOOLTIP_ONLY,
-    NOTIFICATION_ONLY,
-    NONE
   }
 
   public enum ListType {

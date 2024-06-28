@@ -34,6 +34,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public interface IPlatform {
 
+  void sendNotifyS2C(ServerPlayer player);
+
   Set<String> getBlocksFromTag(ResourceLocation resourceLocation);
 
   EnchantmentCategory getEnchantmentCategory();

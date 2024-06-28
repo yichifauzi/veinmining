@@ -18,7 +18,9 @@
 package com.illusivesoulworks.veinmining.platform;
 
 import com.google.common.collect.ImmutableMap;
+import com.illusivesoulworks.veinmining.VeinMiningFabricMod;
 import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
+import com.illusivesoulworks.veinmining.common.network.CPacketState;
 import com.illusivesoulworks.veinmining.common.platform.services.IPlatform;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningPlayers;
 import java.util.Arrays;
@@ -28,11 +30,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -49,6 +55,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class FabricPlatform implements IPlatform {
+
+  @Override
+  public void sendNotifyS2C(ServerPlayer player) {
+    ServerPlayNetworking.send(player, VeinMiningFabricMod.NOTIFY_PACKET, PacketByteBufs.empty());
+  }
 
   @Override
   public Set<String> getBlocksFromTag(ResourceLocation resourceLocation) {

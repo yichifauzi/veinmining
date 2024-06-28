@@ -17,11 +17,14 @@
 
 package com.illusivesoulworks.veinmining.client;
 
+import com.illusivesoulworks.veinmining.VeinMiningQuiltMod;
+import com.illusivesoulworks.veinmining.common.network.SPacketNotify;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningKey;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import org.quiltmc.loader.api.ModContainer;
 import org.quiltmc.qsl.base.api.entrypoint.client.ClientModInitializer;
 import org.quiltmc.qsl.lifecycle.api.client.event.ClientTickEvents;
+import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking;
 import org.quiltmc.qsl.tooltip.api.client.ItemTooltipCallback;
 
 public class VeinMiningQuiltClientMod implements ClientModInitializer {
@@ -33,5 +36,8 @@ public class VeinMiningQuiltClientMod implements ClientModInitializer {
     ClientTickEvents.END.register(client -> VeinMiningClientEvents.tick());
     ItemTooltipCallback.EVENT.register(
         (stack, player, context, lines) -> VeinMiningClientEvents.tooltip(stack, lines));
+    ClientPlayNetworking.registerGlobalReceiver(VeinMiningQuiltMod.NOTIFY_PACKET,
+        (client, handler, buf, responseSender) -> client.execute(
+            () -> SPacketNotify.handle(new SPacketNotify())));
   }
 }

@@ -20,6 +20,8 @@ package com.illusivesoulworks.veinmining.platform;
 import com.google.common.collect.ImmutableMap;
 import com.illusivesoulworks.veinmining.VeinMiningConstants;
 import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
+import com.illusivesoulworks.veinmining.common.network.SPacketNotify;
+import com.illusivesoulworks.veinmining.common.network.VeinMiningForgeNetwork;
 import com.illusivesoulworks.veinmining.common.platform.services.IPlatform;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningPlayers;
 import com.illusivesoulworks.veinmining.common.veinmining.enchantment.VeinMiningEnchantment;
@@ -54,6 +56,7 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.ToolAction;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.tags.ITagManager;
 
@@ -62,6 +65,12 @@ public class ForgePlatform implements IPlatform {
   private static final EnchantmentCategory CATEGORY =
       EnchantmentCategory.create(VeinMiningConstants.ENCHANTMENT_ID.toString(),
           VeinMiningEnchantment::canEnchant);
+
+  @Override
+  public void sendNotifyS2C(ServerPlayer player) {
+    VeinMiningForgeNetwork.get()
+        .send(PacketDistributor.PLAYER.with(() -> player), new SPacketNotify());
+  }
 
   @Override
   public Set<String> getBlocksFromTag(ResourceLocation resourceLocation) {

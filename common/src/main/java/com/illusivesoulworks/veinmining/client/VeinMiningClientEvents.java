@@ -20,7 +20,6 @@ package com.illusivesoulworks.veinmining.client;
 import com.illusivesoulworks.veinmining.VeinMiningMod;
 import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
 import com.illusivesoulworks.veinmining.common.platform.ClientServices;
-import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningEvents;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningKey;
 import java.util.List;
 import net.minecraft.ChatFormatting;
@@ -80,14 +79,12 @@ public class VeinMiningClientEvents {
     boolean needsEnchantment = VeinMiningConfig.SERVER.maxBlocksBase.get() == 0;
 
     if (needsEnchantment && !(stack.getItem() instanceof EnchantedBookItem)) {
-      VeinMiningConfig.TutorialMode mode = VeinMiningConfig.CLIENT.enchantmentTutorialMode.get();
 
-      if (mode == VeinMiningConfig.TutorialMode.ALL ||
-          mode == VeinMiningConfig.TutorialMode.TOOLTIP_ONLY) {
+      if (VeinMiningConfig.CLIENT.enableEnchantmentTooltips.get()) {
         int level = EnchantmentHelper.getItemEnchantmentLevel(VeinMiningMod.ENCHANTMENT, stack);
 
         if (level > 0) {
-          MutableComponent component = VeinMiningEvents.getTutorialMessage();
+          MutableComponent component = getTutorialMessage();
           component.withStyle(ChatFormatting.DARK_AQUA);
           int index = tooltip.size();
 
@@ -113,5 +110,30 @@ public class VeinMiningClientEvents {
         }
       }
     }
+  }
+
+  public static MutableComponent getTutorialMessage() {
+    MutableComponent component = null;
+
+    switch (VeinMiningConfig.CLIENT.activationState.get()) {
+      case STANDING ->
+          component = Component.translatable("tutorial.veinmining.enchantment.standing");
+      case CROUCHING ->
+          component = Component.translatable("tutorial.veinmining.enchantment.crouching");
+      case HOLD_KEY_DOWN -> {
+        if (VeinMiningKey.get().isUnbound()) {
+          component = Component.translatable("tutorial.veinmining.enchantment.no_key")
+              .withStyle(ChatFormatting.RED);
+        } else {
+          Component name = VeinMiningKey.get().getTranslatedKeyMessage();
+
+          if (name instanceof MutableComponent mutableComponent) {
+            mutableComponent.withStyle(ChatFormatting.YELLOW);
+          }
+          component = Component.translatable("tutorial.veinmining.enchantment.key", name);
+        }
+      }
+    }
+    return component;
   }
 }

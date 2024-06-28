@@ -39,6 +39,8 @@ public class VeinMiningQuiltMod implements ModInitializer {
 
   public static final ResourceLocation STATE_PACKET =
       new ResourceLocation(VeinMiningConstants.MOD_ID, "state");
+  public static final ResourceLocation NOTIFY_PACKET =
+      new ResourceLocation(VeinMiningConstants.MOD_ID, "notify");
 
   @Override
   public void onInitialize(ModContainer modContainer) {

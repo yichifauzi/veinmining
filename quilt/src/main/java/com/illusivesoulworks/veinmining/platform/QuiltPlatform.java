@@ -18,6 +18,7 @@
 package com.illusivesoulworks.veinmining.platform;
 
 import com.google.common.collect.ImmutableMap;
+import com.illusivesoulworks.veinmining.VeinMiningQuiltMod;
 import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
 import com.illusivesoulworks.veinmining.common.platform.services.IPlatform;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningPlayers;
@@ -47,8 +48,15 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.GameMasterBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import org.quiltmc.qsl.networking.api.PacketByteBufs;
+import org.quiltmc.qsl.networking.api.ServerPlayNetworking;
 
 public class QuiltPlatform implements IPlatform {
+
+  @Override
+  public void sendNotifyS2C(ServerPlayer player) {
+    ServerPlayNetworking.send(player, VeinMiningQuiltMod.NOTIFY_PACKET, PacketByteBufs.empty());
+  }
 
   @Override
   public Set<String> getBlocksFromTag(ResourceLocation resourceLocation) {
