@@ -19,6 +19,7 @@ package com.illusivesoulworks.veinmining.client;
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 public class NeoForgeClientEventsListener {
 
@@ -26,5 +27,11 @@ public class NeoForgeClientEventsListener {
   @SuppressWarnings("unused")
   public void veinMiningState(final ClientTickEvent.Post evt) {
     VeinMiningClientEvents.tick();
+  }
+
+  @SubscribeEvent
+  @SuppressWarnings("unused")
+  public void itemTooltip(final ItemTooltipEvent evt) {
+    VeinMiningClientEvents.tooltip(evt.getItemStack(), evt.getToolTip());
   }
 }

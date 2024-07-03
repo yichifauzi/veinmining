@@ -18,10 +18,12 @@
 package com.illusivesoulworks.veinmining.platform;
 
 import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
+import com.illusivesoulworks.veinmining.common.network.SPacketNotify;
 import com.illusivesoulworks.veinmining.common.platform.services.IPlatform;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningPlayers;
 import java.util.Optional;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -36,6 +38,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 public class FabricPlatform implements IPlatform {
+
+  @Override
+  public void sendNotifyS2C(ServerPlayer player) {
+    ServerPlayNetworking.send(player, new SPacketNotify());
+  }
 
   @Override
   public Optional<ResourceLocation> getResourceLocation(Block block) {

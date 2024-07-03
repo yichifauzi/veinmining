@@ -163,18 +163,41 @@ public class VeinMiningConfig {
     public final SpectreConfigSpec.EnumValue<VeinMiningConfig.ActivationState> activationState;
     public final SpectreConfigSpec.EnumValue<VeinMiningConfig.ActivationState>
         activationStateWithoutEnchantment;
+    public final SpectreConfigSpec.BooleanValue enableEnchantmentWarnings;
+    public final SpectreConfigSpec.BooleanValue enableEnchantmentTooltips;
+    public final SpectreConfigSpec.BooleanValue enableEnchantmentNotifications;
 
     public Client(SpectreConfigSpec.Builder builder) {
 
-      activationState = builder.comment(
-              "If maxBlocksBase is 0, determines how to activate vein mining.")
+      activationState = builder.comment("""
+              If maxBlocksBase from veinmining-server.toml is 0, determines how to activate vein mining.
+              IMPORTANT: When using the "HOLD_KEY_DOWN" setting, remember to set a keybinding by going to Options > Controls > Key Binds.""")
           .translation(CONFIG_PREFIX + "activationState")
           .defineEnum("activationState", ActivationState.STANDING);
 
-      activationStateWithoutEnchantment = builder.comment(
-              "If maxBlocksBase is greater than 0, determines how to activate vein mining.")
+      activationStateWithoutEnchantment = builder.comment("""
+              If maxBlocksBase from veinmining-server.toml is greater than 0, determines how to activate vein mining.
+              IMPORTANT: When using the "HOLD_KEY_DOWN" setting, remember to set a keybinding by going to Options > Controls > Key Binds.""")
           .translation(CONFIG_PREFIX + "activationStateWithoutEnchantment")
           .defineEnum("activationStateWithoutEnchantment", ActivationState.HOLD_KEY_DOWN);
+
+      enableEnchantmentWarnings = builder
+          .comment(
+              "If enabled, users will be sent warnings about improper enchantment usage.")
+          .translation(CONFIG_PREFIX + "enableEnchantmentWarnings")
+          .define("enableEnchantmentWarnings", true);
+
+      enableEnchantmentTooltips = builder
+          .comment(
+              "If enabled, instructions on how to vein mine will appear in the tooltip of enchanted items.")
+          .translation(CONFIG_PREFIX + "enableEnchantmentTooltips")
+          .define("enableEnchantmentTooltips", true);
+
+      enableEnchantmentNotifications = builder
+          .comment(
+              "If enabled, instructions on how to vein mine will appear above the hotbar when switching to enchanted items.")
+          .translation(CONFIG_PREFIX + "enableEnchantmentNotifications")
+          .define("enableEnchantmentNotifications", false);
     }
   }
 

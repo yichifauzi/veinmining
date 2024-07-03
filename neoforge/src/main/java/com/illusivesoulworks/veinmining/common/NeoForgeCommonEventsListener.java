@@ -26,6 +26,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
@@ -70,6 +71,11 @@ public class NeoForgeCommonEventsListener {
     if (evt.getPlayer() instanceof ServerPlayer player) {
       VeinMiningEvents.blockBreak(player, evt.getPos(), evt.getState());
     }
+  }
+
+  @SubscribeEvent
+  public void toolEquip(final LivingEquipmentChangeEvent evt) {
+    VeinMiningEvents.toolEquip(evt.getTo(), evt.getFrom(), evt.getSlot(), evt.getEntity());
   }
 
   @SubscribeEvent

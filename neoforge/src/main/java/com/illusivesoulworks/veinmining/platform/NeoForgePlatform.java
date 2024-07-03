@@ -18,6 +18,7 @@
 package com.illusivesoulworks.veinmining.platform;
 
 import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
+import com.illusivesoulworks.veinmining.common.network.SPacketNotify;
 import com.illusivesoulworks.veinmining.common.platform.services.IPlatform;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningPlayers;
 import java.util.Optional;
@@ -39,8 +40,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.CommonHooks;
 import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.level.BlockEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 public class NeoForgePlatform implements IPlatform {
+
+  @Override
+  public void sendNotifyS2C(ServerPlayer player) {
+    PacketDistributor.sendToPlayer(player, SPacketNotify.INSTANCE);
+  }
 
   @Override
   public Optional<ResourceLocation> getResourceLocation(Block block) {

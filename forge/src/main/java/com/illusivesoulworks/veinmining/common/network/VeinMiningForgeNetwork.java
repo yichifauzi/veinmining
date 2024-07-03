@@ -19,10 +19,13 @@ package com.illusivesoulworks.veinmining.common.network;
 
 import com.illusivesoulworks.veinmining.VeinMiningConstants;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.Channel;
 import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.SimpleChannel;
@@ -48,6 +51,25 @@ public class VeinMiningForgeNetwork {
     registerC2S(CPacketState.class, CPacketState.STREAM_CODEC::encode,
         CPacketState.STREAM_CODEC::decode,
         (cPacketState, serverPlayer) -> CPacketState.handle(cPacketState.activate(), serverPlayer));
+
+    // Server-to-Client
+    registerS2C(SPacketNotify.class, SPacketNotify.STREAM_CODEC::encode,
+        SPacketNotify.STREAM_CODEC::decode, (packet) -> SPacketNotify.handle());
+  }
+
+  public static <M> void registerS2C(Class<M> messageType, BiConsumer<FriendlyByteBuf, M> encoder,
+                                     Function<FriendlyByteBuf, M> decoder,
+                                     Consumer<M> messageConsumer) {
+    instance.messageBuilder(messageType)
+        .decoder(decoder)
+        .encoder(((m, friendlyByteBuf) -> encoder.accept(friendlyByteBuf, m)))
+        .consumerNetworkThread((m, context) -> {
+          DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
+              () -> () -> {
+                context.enqueueWork(() -> messageConsumer.accept(m));
+                context.setPacketHandled(true);
+              });
+        }).add();
   }
 
   public static <M> void registerC2S(Class<M> messageType, BiConsumer<FriendlyByteBuf, M> encoder,

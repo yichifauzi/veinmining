@@ -25,6 +25,7 @@ import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
@@ -70,6 +71,11 @@ public class ForgeCommonEventsListener {
     if (evt.getPlayer() instanceof ServerPlayer player) {
       VeinMiningEvents.blockBreak(player, evt.getPos(), evt.getState());
     }
+  }
+
+  @SubscribeEvent
+  public void toolEquip(final LivingEquipmentChangeEvent evt) {
+    VeinMiningEvents.toolEquip(evt.getTo(), evt.getFrom(), evt.getSlot(), evt.getEntity());
   }
 
   @SubscribeEvent

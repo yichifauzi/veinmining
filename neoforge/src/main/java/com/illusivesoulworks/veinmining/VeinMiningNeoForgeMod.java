@@ -21,6 +21,8 @@ import com.illusivesoulworks.veinmining.client.NeoForgeClientEventsListener;
 import com.illusivesoulworks.veinmining.common.NeoForgeCommonEventsListener;
 import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
 import com.illusivesoulworks.veinmining.common.network.CPacketState;
+import com.illusivesoulworks.veinmining.common.network.SPacketNotify;
+import com.illusivesoulworks.veinmining.common.network.VeinMiningClientPayloadHandler;
 import com.illusivesoulworks.veinmining.common.network.VeinMiningServerPayloadHandler;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningKey;
 import net.neoforged.api.distmarker.Dist;
@@ -48,6 +50,9 @@ public class VeinMiningNeoForgeMod {
     evt.registrar(VeinMiningConstants.MOD_ID)
         .playToServer(CPacketState.TYPE, CPacketState.STREAM_CODEC,
             VeinMiningServerPayloadHandler.getInstance()::handleState);
+    evt.registrar(VeinMiningConstants.MOD_ID)
+        .playToClient(SPacketNotify.TYPE, SPacketNotify.STREAM_CODEC,
+            VeinMiningClientPayloadHandler.getInstance()::handleNotify);
   }
 
   private void setup(final FMLCommonSetupEvent evt) {

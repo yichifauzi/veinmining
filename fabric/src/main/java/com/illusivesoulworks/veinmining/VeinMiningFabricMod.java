@@ -18,8 +18,10 @@
 package com.illusivesoulworks.veinmining;
 
 import com.illusivesoulworks.veinmining.common.network.CPacketState;
+import com.illusivesoulworks.veinmining.common.network.SPacketNotify;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningEvents;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
@@ -45,6 +47,7 @@ public class VeinMiningFabricMod implements ModInitializer {
       }
     });
     PayloadTypeRegistry.playC2S().register(CPacketState.TYPE, CPacketState.STREAM_CODEC);
+    PayloadTypeRegistry.playS2C().register(SPacketNotify.TYPE, SPacketNotify.STREAM_CODEC);
     ServerPlayNetworking.registerGlobalReceiver(CPacketState.TYPE, (payload, context) -> {
       ServerPlayer player = context.player();
       MinecraftServer server = player.getServer();
@@ -54,5 +57,8 @@ public class VeinMiningFabricMod implements ModInitializer {
         server.execute(() -> CPacketState.handle(activate, player));
       }
     });
+    ServerEntityEvents.EQUIPMENT_CHANGE.register(
+        (livingEntity, equipmentSlot, previousStack, currentStack) -> VeinMiningEvents.toolEquip(
+            currentStack, previousStack, equipmentSlot, livingEntity));
   }
 }
