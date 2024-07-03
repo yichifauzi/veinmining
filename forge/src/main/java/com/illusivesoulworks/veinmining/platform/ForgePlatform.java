@@ -22,7 +22,9 @@ import com.illusivesoulworks.veinmining.common.network.SPacketNotify;
 import com.illusivesoulworks.veinmining.common.network.VeinMiningForgeNetwork;
 import com.illusivesoulworks.veinmining.common.platform.services.IPlatform;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningPlayers;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -43,6 +45,7 @@ import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.tags.ITagManager;
 
 public class ForgePlatform implements IPlatform {
 
@@ -50,6 +53,30 @@ public class ForgePlatform implements IPlatform {
   public void sendNotifyS2C(ServerPlayer player) {
     VeinMiningForgeNetwork.get()
         .send(SPacketNotify.INSTANCE, PacketDistributor.PLAYER.with(player));
+  }
+
+  @Override
+  public Set<String> getBlocksFromTag(ResourceLocation resourceLocation) {
+    Set<String> result = new HashSet<>();
+    ITagManager<Block> tagManager = ForgeRegistries.BLOCKS.tags();
+
+    if (tagManager != null) {
+
+      for (Block block : tagManager.getTag(
+          tagManager.createOptionalTagKey(resourceLocation, new HashSet<>()))) {
+        ResourceLocation rl = ForgeRegistries.BLOCKS.getKey(block);
+
+        if (rl != null) {
+          result.add(rl.toString());
+        }
+      }
+    }
+    return result;
+  }
+
+  @Override
+  public Block getBlock(ResourceLocation resourceLocation) {
+    return ForgeRegistries.BLOCKS.getValue(resourceLocation);
   }
 
   @Override

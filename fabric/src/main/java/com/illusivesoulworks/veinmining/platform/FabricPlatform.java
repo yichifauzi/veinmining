@@ -21,13 +21,18 @@ import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
 import com.illusivesoulworks.veinmining.common.network.SPacketNotify;
 import com.illusivesoulworks.veinmining.common.platform.services.IPlatform;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningPlayers;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.food.FoodData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
@@ -42,6 +47,23 @@ public class FabricPlatform implements IPlatform {
   @Override
   public void sendNotifyS2C(ServerPlayer player) {
     ServerPlayNetworking.send(player, new SPacketNotify());
+  }
+
+  @Override
+  public Set<String> getBlocksFromTag(ResourceLocation resourceLocation) {
+    Set<String> result = new HashSet<>();
+    BuiltInRegistries.BLOCK.getTag(TagKey.create(Registries.BLOCK, resourceLocation))
+        .ifPresent(block -> {
+          for (Holder<Block> blockHolder : block) {
+            blockHolder.unwrapKey().ifPresent(key -> result.add(key.location().toString()));
+          }
+        });
+    return result;
+  }
+
+  @Override
+  public Block getBlock(ResourceLocation resourceLocation) {
+    return BuiltInRegistries.BLOCK.get(resourceLocation);
   }
 
   @Override

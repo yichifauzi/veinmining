@@ -21,12 +21,17 @@ import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
 import com.illusivesoulworks.veinmining.common.network.SPacketNotify;
 import com.illusivesoulworks.veinmining.common.platform.services.IPlatform;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningPlayers;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
@@ -47,6 +52,23 @@ public class NeoForgePlatform implements IPlatform {
   @Override
   public void sendNotifyS2C(ServerPlayer player) {
     PacketDistributor.sendToPlayer(player, SPacketNotify.INSTANCE);
+  }
+
+  @Override
+  public Set<String> getBlocksFromTag(ResourceLocation resourceLocation) {
+    Set<String> result = new HashSet<>();
+    BuiltInRegistries.BLOCK.getTag(TagKey.create(Registries.BLOCK, resourceLocation))
+        .ifPresent(block -> {
+          for (Holder<Block> blockHolder : block) {
+            blockHolder.unwrapKey().ifPresent(key -> result.add(key.location().toString()));
+          }
+        });
+    return result;
+  }
+
+  @Override
+  public Block getBlock(ResourceLocation resourceLocation) {
+    return BuiltInRegistries.BLOCK.get(resourceLocation);
   }
 
   @Override

@@ -17,6 +17,7 @@
 
 package com.illusivesoulworks.veinmining.common;
 
+import com.illusivesoulworks.veinmining.common.data.BlockGroupsResourceListener;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningEvents;
 import javax.annotation.Nonnull;
 import net.minecraft.server.level.ServerPlayer;
@@ -43,23 +44,12 @@ public class NeoForgeCommonEventsListener {
   @SubscribeEvent
   @SuppressWarnings("unused")
   public void reload(final AddReloadListenerEvent evt) {
-    evt.addListener(new SimplePreparableReloadListener<Void>() {
-      @Nonnull
-      @Override
-      protected Void prepare(@Nonnull ResourceManager resourceManagerIn,
-                             @Nonnull ProfilerFiller profilerIn) {
-        return null;
-      }
-
-      @Override
-      protected void apply(@Nonnull Void objectIn, @Nonnull ResourceManager resourceManagerIn,
-                           @Nonnull ProfilerFiller profilerIn) {
-        VeinMiningEvents.reloadDatapack();
-      }
-    });
+    BlockGroupsResourceListener.INSTANCE = new BlockGroupsResourceListener();
+    evt.addListener(BlockGroupsResourceListener.INSTANCE);
   }
 
   @SubscribeEvent
+  @SuppressWarnings("unused")
   public void serverStarted(final ServerStartedEvent evt) {
     VeinMiningEvents.reloadDatapack();
   }
@@ -74,11 +64,13 @@ public class NeoForgeCommonEventsListener {
   }
 
   @SubscribeEvent
+  @SuppressWarnings("unused")
   public void toolEquip(final LivingEquipmentChangeEvent evt) {
     VeinMiningEvents.toolEquip(evt.getTo(), evt.getFrom(), evt.getSlot(), evt.getEntity());
   }
 
   @SubscribeEvent
+  @SuppressWarnings("unused")
   public void playerLoggedOut(final PlayerEvent.PlayerLoggedOutEvent evt) {
 
     if (evt.getEntity() instanceof ServerPlayer player) {

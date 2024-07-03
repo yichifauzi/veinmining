@@ -38,6 +38,7 @@ public class BlockProcessor {
     checkedBlocks.clear();
     checkedPairs.clear();
     checkedTags.clear();
+    BlockGroups.rebuild();
   }
 
   public static boolean isValidTarget(BlockState state, Block source) {
@@ -156,6 +157,6 @@ public class BlockProcessor {
     if (originName.isEmpty() || targetName.isEmpty()) {
       return false;
     }
-    return originName.equals(targetName);
+    return BlockGroups.getGroup(originName).contains(targetName);
   }
 }
