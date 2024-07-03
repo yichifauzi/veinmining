@@ -17,61 +17,30 @@
 
 package com.illusivesoulworks.veinmining.platform;
 
-import com.google.common.collect.ImmutableMap;
-import com.illusivesoulworks.veinmining.VeinMiningNeoForgeMod;
 import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
 import com.illusivesoulworks.veinmining.common.platform.services.IPlatform;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningPlayers;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.CommandBlock;
-import net.minecraft.world.level.block.JigsawBlock;
-import net.minecraft.world.level.block.StructureBlock;
+import net.minecraft.world.level.block.GameMasterBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.CommonHooks;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
 import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.event.level.BlockEvent;
 
 public class NeoForgePlatform implements IPlatform {
-
-  @Override
-  public Enchantment getVeinMiningEnchantment() {
-    return VeinMiningNeoForgeMod.ENCHANTMENT.get();
-  }
-
-  @Override
-  public Optional<Enchantment> getEnchantment(ResourceLocation resourceLocation) {
-    return Optional.ofNullable(BuiltInRegistries.ENCHANTMENT.get(resourceLocation));
-  }
-
-  @Override
-  public Optional<Item> getItem(ResourceLocation resourceLocation) {
-    return Optional.of(BuiltInRegistries.ITEM.get(resourceLocation));
-  }
 
   @Override
   public Optional<ResourceLocation> getResourceLocation(Block block) {
@@ -79,57 +48,26 @@ public class NeoForgePlatform implements IPlatform {
   }
 
   @Override
-  public Map<String, Predicate<ItemStack>> buildEnchantableItems() {
-    Map<String, Predicate<ItemStack>> result = new HashMap<>();
-    result.put("is:tool", NeoForgePlatform::canToolAction);
-    result.put("is:pickaxe", stack -> canToolAction(ToolActions.PICKAXE_DIG, stack));
-    result.put("is:axe", stack -> canToolAction(ToolActions.AXE_DIG, stack));
-    result.put("is:hoe", stack -> canToolAction(ToolActions.HOE_DIG, stack));
-    result.put("is:shovel", stack -> canToolAction(ToolActions.SHOVEL_DIG, stack));
-    return ImmutableMap.copyOf(result);
-  }
-
-  @Override
-  public boolean canHarvestDrops(ServerPlayer playerEntity, BlockState state) {
-    return CommonHooks.isCorrectToolForDrops(state, playerEntity);
-  }
-
-  private static boolean canToolAction(ToolAction toolAction, ItemStack stack) {
-    return stack.canPerformAction(toolAction);
-  }
-
-  private static boolean canToolAction(ItemStack stack) {
-    Set<ToolAction> actions =
-        Set.of(ToolActions.PICKAXE_DIG, ToolActions.AXE_DIG, ToolActions.HOE_DIG,
-            ToolActions.SHOVEL_DIG);
-
-    for (ToolAction action : actions) {
-
-      if (stack.canPerformAction(action)) {
-        return true;
-      }
-    }
-    return false;
+  public boolean canHarvestDrops(ServerPlayer playerEntity, BlockState state, BlockPos pos) {
+    return EventHooks.doPlayerHarvestCheck(playerEntity, state, playerEntity.level(), pos);
   }
 
   public boolean harvest(ServerPlayer player, BlockPos pos, BlockPos originPos) {
     ServerLevel world = player.serverLevel();
     BlockState blockstate = world.getBlockState(pos);
     GameType gameType = player.gameMode.getGameModeForPlayer();
-    int exp = CommonHooks.onBlockBreakEvent(world, gameType, player, pos);
+    BlockEvent.BreakEvent evt =
+        CommonHooks.fireBlockBreak(world, gameType, player, pos, blockstate);
 
-    if (exp == -1) {
+    if (evt.isCanceled()) {
       return false;
     } else {
       BlockEntity blockentity = world.getBlockEntity(pos);
       Block block = blockstate.getBlock();
 
-      if ((block instanceof CommandBlock || block instanceof StructureBlock ||
-          block instanceof JigsawBlock) && !player.canUseGameMasterBlocks()) {
+      if (block instanceof GameMasterBlock && !player.canUseGameMasterBlocks()) {
         world.sendBlockUpdated(pos, blockstate, blockstate, 3);
         return false;
-      } else if (player.getMainHandItem().onBlockStartBreak(pos, player)) {
-        return true;
       } else if (player.blockActionRestricted(world, pos, gameType)) {
         return false;
       } else {
@@ -164,31 +102,10 @@ public class NeoForgePlatform implements IPlatform {
               foodData.setExhaustion(currentExhaustion);
             }
           }
-
-          if (flag && exp > 0) {
-            blockstate.getBlock().popExperience(world, spawnPos, exp);
-          }
         }
         return true;
       }
     }
-  }
-
-  @Override
-  public Set<String> getItemsFromTag(ResourceLocation resourceLocation) {
-    Set<String> result = new HashSet<>();
-    BuiltInRegistries.ITEM.getTagOrEmpty(TagKey.create(Registries.ITEM, resourceLocation))
-        .forEach(holder -> {
-          Item item = holder.value();
-          ResourceLocation rl = BuiltInRegistries.ITEM.getKey(item);
-          result.add(rl.toString());
-        });
-    return result;
-  }
-
-  @Override
-  public List<String> getDefaultItemsConfig() {
-    return Arrays.asList("is:tool", "quark:pickarang", "quark:flamerang");
   }
 
   private static boolean removeBlock(Player player, BlockPos pos, boolean canHarvest) {

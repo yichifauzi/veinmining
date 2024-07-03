@@ -18,16 +18,20 @@
 package com.illusivesoulworks.veinmining.common.veinmining.logic;
 
 import com.google.common.collect.Sets;
+import com.illusivesoulworks.veinmining.VeinMiningConstants;
 import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
 import com.illusivesoulworks.veinmining.common.platform.Services;
 import java.util.LinkedList;
 import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -43,7 +47,7 @@ public class VeinMiningLogic {
     ItemStack stack = playerEntity.getMainHandItem();
     Block source = sourceState.getBlock();
     boolean notCorrect = VeinMiningConfig.SERVER.requireCorrectTool.get() &&
-        !Services.PLATFORM.canHarvestDrops(playerEntity, sourceState);
+        !Services.PLATFORM.canHarvestDrops(playerEntity, sourceState, pos);
     float destroySpeed = stack.getDestroySpeed(sourceState);
     // Check for destroySpeed > 0.0 to auto-include items that have non-native break logic
     boolean tooSlow =
@@ -52,9 +56,11 @@ public class VeinMiningLogic {
     if (notCorrect || tooSlow) {
       return;
     }
+    Holder<Enchantment> enchantment = playerEntity.registryAccess().lookup(Registries.ENCHANTMENT)
+        .map(enchantmentRegistryLookup -> enchantmentRegistryLookup.getOrThrow(
+            VeinMiningConstants.ENCHANTMENT)).orElse(null);
     int veiningLevels =
-        EnchantmentHelper.getItemEnchantmentLevel(Services.PLATFORM.getVeinMiningEnchantment(),
-            stack);
+        enchantment != null ? EnchantmentHelper.getItemEnchantmentLevel(enchantment, stack) : 0;
     int maxBlocks = VeinMiningConfig.SERVER.maxBlocksBase.get() +
         VeinMiningConfig.SERVER.maxBlocksPerLevel.get() * veiningLevels;
     int maxDistance = 200;

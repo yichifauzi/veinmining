@@ -38,7 +38,8 @@ public class VeinMiningForgeNetwork {
   }
 
   public static void setup() {
-    instance = ChannelBuilder.named(new ResourceLocation(VeinMiningConstants.MOD_ID, "main"))
+    instance = ChannelBuilder.named(
+            ResourceLocation.fromNamespaceAndPath(VeinMiningConstants.MOD_ID, "main"))
         .networkProtocolVersion(PTC_VERSION)
         .clientAcceptedVersions(Channel.VersionTest.exact(PTC_VERSION))
         .serverAcceptedVersions(Channel.VersionTest.exact(PTC_VERSION)).simpleChannel();

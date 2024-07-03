@@ -17,37 +17,18 @@
 
 package com.illusivesoulworks.veinmining.common.platform.services;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.function.Predicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 
 public interface IPlatform {
 
-  Enchantment getVeinMiningEnchantment();
-
-  Optional<Enchantment> getEnchantment(ResourceLocation resourceLocation);
-
-  Optional<Item> getItem(ResourceLocation resourceLocation);
-
   Optional<ResourceLocation> getResourceLocation(Block block);
 
-  Map<String, Predicate<ItemStack>> buildEnchantableItems();
-
-  boolean canHarvestDrops(ServerPlayer playerEntity, BlockState state);
+  boolean canHarvestDrops(ServerPlayer playerEntity, BlockState state, BlockPos pos);
 
   boolean harvest(ServerPlayer player, BlockPos pos, BlockPos originPos);
-
-  Set<String> getItemsFromTag(ResourceLocation resourceLocation);
-
-  List<String> getDefaultItemsConfig();
 }

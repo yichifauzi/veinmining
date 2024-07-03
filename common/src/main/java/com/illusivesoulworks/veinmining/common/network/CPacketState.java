@@ -30,7 +30,7 @@ import net.minecraft.server.level.ServerPlayer;
 public record CPacketState(boolean activate) implements CustomPacketPayload {
 
   public static final Type<CPacketState> TYPE =
-      new Type<>(new ResourceLocation(VeinMiningConstants.MOD_ID, "state"));
+      new Type<>(ResourceLocation.fromNamespaceAndPath(VeinMiningConstants.MOD_ID, "state"));
   public static final StreamCodec<FriendlyByteBuf, CPacketState> STREAM_CODEC =
       StreamCodec.composite(
           ByteBufCodecs.BOOL,

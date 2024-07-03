@@ -17,14 +17,19 @@
 
 package com.illusivesoulworks.veinmining;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.enchantment.Enchantment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class VeinMiningConstants {
 
-	public static final String MOD_ID = "veinmining";
-	public static final String MOD_NAME = "Vein Mining";
-	public static final Logger LOG = LoggerFactory.getLogger(MOD_NAME);
-	public static final ResourceLocation ENCHANTMENT_ID = new ResourceLocation(MOD_ID, "vein_mining");
+  public static final String MOD_ID = "veinmining";
+  public static final String MOD_NAME = "Vein Mining";
+  public static final Logger LOG = LoggerFactory.getLogger(MOD_NAME);
+  public static final ResourceKey<Enchantment> ENCHANTMENT =
+      ResourceKey.create(Registries.ENCHANTMENT,
+          ResourceLocation.fromNamespaceAndPath(MOD_ID, "vein_mining"));
 }

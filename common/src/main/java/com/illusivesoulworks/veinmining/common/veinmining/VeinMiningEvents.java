@@ -17,7 +17,6 @@
 
 package com.illusivesoulworks.veinmining.common.veinmining;
 
-import com.illusivesoulworks.veinmining.common.veinmining.enchantment.ItemProcessor;
 import com.illusivesoulworks.veinmining.common.veinmining.logic.BlockProcessor;
 import com.illusivesoulworks.veinmining.common.veinmining.logic.VeinMiningLogic;
 import net.minecraft.core.BlockPos;
@@ -35,7 +34,6 @@ public class VeinMiningEvents {
   }
 
   public static void reloadDatapack() {
-    ItemProcessor.rebuild();
     BlockProcessor.rebuild();
   }
 

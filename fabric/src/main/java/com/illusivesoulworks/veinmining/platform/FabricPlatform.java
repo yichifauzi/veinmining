@@ -17,30 +17,17 @@
 
 package com.illusivesoulworks.veinmining.platform;
 
-import com.google.common.collect.ImmutableMap;
-import com.illusivesoulworks.veinmining.VeinMiningFabricMod;
 import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
 import com.illusivesoulworks.veinmining.common.platform.services.IPlatform;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningPlayers;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.function.Predicate;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.food.FoodData;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -51,32 +38,12 @@ import net.minecraft.world.level.block.state.BlockState;
 public class FabricPlatform implements IPlatform {
 
   @Override
-  public Enchantment getVeinMiningEnchantment() {
-    return VeinMiningFabricMod.VEIN_MINING_ENCHANTMENT;
-  }
-
-  @Override
-  public Optional<Enchantment> getEnchantment(ResourceLocation resourceLocation) {
-    return Optional.ofNullable(BuiltInRegistries.ENCHANTMENT.get(resourceLocation));
-  }
-
-  @Override
-  public Optional<Item> getItem(ResourceLocation resourceLocation) {
-    return Optional.of(BuiltInRegistries.ITEM.get(resourceLocation));
-  }
-
-  @Override
   public Optional<ResourceLocation> getResourceLocation(Block block) {
     return Optional.of(BuiltInRegistries.BLOCK.getKey(block));
   }
 
   @Override
-  public Map<String, Predicate<ItemStack>> buildEnchantableItems() {
-    return ImmutableMap.of();
-  }
-
-  @Override
-  public boolean canHarvestDrops(ServerPlayer playerEntity, BlockState state) {
+  public boolean canHarvestDrops(ServerPlayer playerEntity, BlockState state, BlockPos blockPos) {
     return playerEntity.hasCorrectToolForDrops(state);
   }
 
@@ -141,22 +108,5 @@ public class FabricPlatform implements IPlatform {
       }
     }
     return true;
-  }
-
-  @Override
-  public Set<String> getItemsFromTag(ResourceLocation resourceLocation) {
-    Set<String> result = new HashSet<>();
-    BuiltInRegistries.ITEM.getTag(TagKey.create(Registries.ITEM, resourceLocation))
-        .ifPresent(item -> {
-          for (Holder<Item> itemHolder : item) {
-            itemHolder.unwrapKey().ifPresent(key -> result.add(key.location().toString()));
-          }
-        });
-    return result;
-  }
-
-  @Override
-  public List<String> getDefaultItemsConfig() {
-    return Arrays.asList("#minecraft:axes", "#minecraft:pickaxes", "#minecraft:shovels", "#minecraft:hoes");
   }
 }

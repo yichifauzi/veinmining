@@ -23,10 +23,6 @@ import com.illusivesoulworks.veinmining.common.config.VeinMiningConfig;
 import com.illusivesoulworks.veinmining.common.network.CPacketState;
 import com.illusivesoulworks.veinmining.common.network.VeinMiningServerPayloadHandler;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningKey;
-import com.illusivesoulworks.veinmining.common.veinmining.enchantment.VeinMiningEnchantment;
-import java.util.function.Supplier;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -37,20 +33,12 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.registries.DeferredRegister;
 
 @Mod(VeinMiningConstants.MOD_ID)
 public class VeinMiningNeoForgeMod {
 
-  private static final DeferredRegister<Enchantment> ENCHANTMENTS = DeferredRegister.create(
-      BuiltInRegistries.ENCHANTMENT, VeinMiningConstants.MOD_ID);
-  public static final Supplier<Enchantment> ENCHANTMENT =
-      ENCHANTMENTS.register(VeinMiningConstants.ENCHANTMENT_ID.getPath(),
-          VeinMiningEnchantment::new);
-
   public VeinMiningNeoForgeMod(IEventBus eventBus) {
     VeinMiningConfig.setup();
-    ENCHANTMENTS.register(eventBus);
     eventBus.addListener(this::setup);
     eventBus.addListener(this::clientSetup);
     eventBus.addListener(this::registerPayloadHandler);

@@ -1,8 +1,11 @@
 package com.illusivesoulworks.veinmining.mixin.core;
 
 import com.illusivesoulworks.veinmining.mixin.VeinMiningMixinHooks;
+import java.util.function.Consumer;
+import javax.annotation.Nullable;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -11,16 +14,16 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemStack.class)
-public class MixinItemStack {
+public abstract class MixinItemStack {
 
   @Inject(
       at = @At(
           value = "INVOKE",
           target = "net/minecraft/world/item/ItemStack.isDamageableItem()Z"),
-      method = "hurtAndBreak(ILnet/minecraft/util/RandomSource;Lnet/minecraft/server/level/ServerPlayer;Ljava/lang/Runnable;)V",
+      method = "hurtAndBreak(ILnet/minecraft/server/level/ServerLevel;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/function/Consumer;)V",
       cancellable = true)
-  private void veinmining$itemDamage(int amount, RandomSource randomSource,
-                                     ServerPlayer serverPlayer, Runnable runnable,
+  private void veinmining$itemDamage(int amount, ServerLevel serverLevel,
+                                     @Nullable ServerPlayer serverPlayer, Consumer<Item> consumer,
                                      CallbackInfo ci) {
 
     if (VeinMiningMixinHooks.shouldCancelItemDamage(serverPlayer)) {
@@ -31,11 +34,11 @@ public class MixinItemStack {
   @SuppressWarnings("ConstantConditions")
   @ModifyVariable(
       at = @At("HEAD"),
-      method = "hurtAndBreak(ILnet/minecraft/util/RandomSource;Lnet/minecraft/server/level/ServerPlayer;Ljava/lang/Runnable;)V",
+      method = "hurtAndBreak(ILnet/minecraft/server/level/ServerLevel;Lnet/minecraft/server/level/ServerPlayer;Ljava/util/function/Consumer;)V",
       argsOnly = true
   )
-  private int veinmining$changeBreak(int amount, int unused, RandomSource randomSource,
-                                     ServerPlayer player) {
-    return VeinMiningMixinHooks.modifyItemDamage((ItemStack) (Object) this, amount, player);
+  private int veinmining$changeBreak(int amount, int unused, ServerLevel serverLevel,
+                                     @Nullable ServerPlayer serverPlayer) {
+    return VeinMiningMixinHooks.modifyItemDamage((ItemStack) (Object) this, amount, serverPlayer);
   }
 }

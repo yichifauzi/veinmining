@@ -21,23 +21,15 @@ import com.illusivesoulworks.spectrelib.config.SpectreConfig;
 import com.illusivesoulworks.spectrelib.config.SpectreConfigLoader;
 import com.illusivesoulworks.spectrelib.config.SpectreConfigSpec;
 import com.illusivesoulworks.veinmining.VeinMiningConstants;
-import com.illusivesoulworks.veinmining.common.platform.Services;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.enchantment.Enchantment;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class VeinMiningConfig {
 
   public static final SpectreConfigSpec SERVER_SPEC;
-  public static final SpectreConfigSpec COMMON_SPEC;
   public static final SpectreConfigSpec CLIENT_SPEC;
   public static final Server SERVER;
-  public static final Common COMMON;
   public static final Client CLIENT;
   private static final String CONFIG_PREFIX = "gui." + VeinMiningConstants.MOD_ID + ".config.";
 
@@ -46,10 +38,6 @@ public class VeinMiningConfig {
         .configure(Server::new);
     SERVER_SPEC = specPairServer.getRight();
     SERVER = specPairServer.getLeft();
-    final Pair<Common, SpectreConfigSpec> specPairCommon = new SpectreConfigSpec.Builder()
-        .configure(Common::new);
-    COMMON_SPEC = specPairCommon.getRight();
-    COMMON = specPairCommon.getLeft();
     final Pair<Client, SpectreConfigSpec> specPairClient = new SpectreConfigSpec.Builder()
         .configure(Client::new);
     CLIENT_SPEC = specPairClient.getRight();
@@ -59,7 +47,6 @@ public class VeinMiningConfig {
   public static void setup() {
     String id = VeinMiningConstants.MOD_ID;
     SpectreConfigLoader.add(SpectreConfig.Type.SERVER, VeinMiningConfig.SERVER_SPEC, id);
-    SpectreConfigLoader.add(SpectreConfig.Type.COMMON, VeinMiningConfig.COMMON_SPEC, id);
     SpectreConfigLoader.add(SpectreConfig.Type.CLIENT, VeinMiningConfig.CLIENT_SPEC, id);
   }
 
@@ -168,109 +155,6 @@ public class VeinMiningConfig {
           builder.comment("Determines if blocksList contains allowed blocks or denied blocks.")
               .translation(CONFIG_PREFIX + "blocksListType")
               .defineEnum("blocksListType", ListType.ALLOW);
-    }
-  }
-
-  public static class Common {
-
-    public final SpectreConfigSpec.IntValue weight;
-    public final SpectreConfigSpec.IntValue anvilCost;
-    public final SpectreConfigSpec.IntValue levels;
-    public final SpectreConfigSpec.BooleanValue isTreasure;
-    public final SpectreConfigSpec.BooleanValue isVillagerTrade;
-    public final SpectreConfigSpec.BooleanValue isLootable;
-    public final SpectreConfigSpec.BooleanValue canApplyAtEnchantingTable;
-    public final SpectreConfigSpec.BooleanValue canApplyOnBooks;
-    public final SpectreConfigSpec.IntValue minCostBase;
-    public final SpectreConfigSpec.IntValue minCostPerLevel;
-    public final SpectreConfigSpec.IntValue maxCostBase;
-    public final SpectreConfigSpec.IntValue maxCostPerLevel;
-    public final SpectreConfigSpec.TransformableValue<List<? extends String>, Set<Enchantment>>
-        incompatibleEnchantments;
-    public final SpectreConfigSpec.TransformableValue<List<? extends String>, Set<String>>
-        itemsList;
-
-    public Common(SpectreConfigSpec.Builder builder) {
-      weight = builder.comment(
-              "The relative weight used for rarity of the enchantment. Higher values result in more frequent appearances.")
-          .translation(CONFIG_PREFIX + "weight")
-          .defineInRange("weight", 2, 1, 20);
-
-      anvilCost =
-          builder.comment("The cost, in levels, of applying the enchantment using an anvil.")
-              .translation(CONFIG_PREFIX + "anvilCost")
-              .defineInRange("anvilCost", 4, 0, 100);
-
-      levels = builder.comment("The number of levels of the enchantment.")
-          .translation(CONFIG_PREFIX + "levels")
-          .defineInRange("levels", 1, 1, 5);
-
-      isTreasure =
-          builder.comment("If enabled, the enchantment is considered a treasure enchantment.")
-              .translation(CONFIG_PREFIX + "isTreasure")
-              .define("isTreasure", false);
-
-      isVillagerTrade =
-          builder.comment("If enabled, the enchantment can be offered by villagers for trade.")
-              .translation(CONFIG_PREFIX + "isVillagerTrade")
-              .define("isVillagerTrade", true);
-
-      isLootable = builder.comment("If enabled, the enchantment can generate in loot.")
-          .translation(CONFIG_PREFIX + "isLootable")
-          .define("isLootable", true);
-
-      canApplyAtEnchantingTable =
-          builder.comment("If enabled, the enchantment can be applied at the enchantment table.")
-              .translation(CONFIG_PREFIX + "canApplyAtEnchantingTable")
-              .define("canApplyAtEnchantingTable", true);
-
-      canApplyOnBooks = builder.comment("If enabled, the enchantment can be applied on books.")
-          .translation(CONFIG_PREFIX + "canApplyOnBooks")
-          .define("canApplyOnBooks", true);
-
-      minCostBase =
-          builder.comment("The minimum enchantability required for the first enchantment level.")
-              .translation(CONFIG_PREFIX + "minCostBase")
-              .defineInRange("minCostBase", 15, 1, 100);
-
-      minCostPerLevel =
-          builder.comment(
-                  "The minimum enchantability required for each enchantment level after the first.")
-              .translation(CONFIG_PREFIX + "minCostPerLevel")
-              .defineInRange("minCostPerLevel", 9, 0, 100);
-
-      maxCostBase =
-          builder.comment("The maximum enchantability required for the first enchantment level.")
-              .translation(CONFIG_PREFIX + "maxCostBase")
-              .defineInRange("maxCostBase", 65, 1, 100);
-
-      maxCostPerLevel =
-          builder.comment(
-                  "The maximum enchantability required for each enchantment level after the first.")
-              .translation(CONFIG_PREFIX + "maxCostPerLevel")
-              .defineInRange("maxCostPerLevel", 9, 0, 100);
-
-      incompatibleEnchantments = builder
-          .comment("Enchantments that cannot be applied together with the enchantment.")
-          .translation(CONFIG_PREFIX + "incompatibleEnchantments")
-          .defineListAllowEmpty(List.of("incompatibleEnchantments"), ArrayList::new,
-              s -> s instanceof String,
-              (Function<List<? extends String>, Set<Enchantment>>) this::convertEnchantments);
-
-      itemsList = builder.comment("Items that the enchantment can be applied on.")
-          .translation(CONFIG_PREFIX + "itemsList")
-          .defineList("itemsList", Services.PLATFORM.getDefaultItemsConfig(),
-              s -> s instanceof String,
-              Set::copyOf);
-    }
-
-    private Set<Enchantment> convertEnchantments(List<? extends String> input) {
-      Set<Enchantment> result = new HashSet<>();
-
-      for (String s : input) {
-        Services.PLATFORM.getEnchantment(ResourceLocation.tryParse(s)).ifPresent(result::add);
-      }
-      return result;
     }
   }
 

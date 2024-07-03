@@ -1,0 +1,13 @@
+{
+  "values": [
+    "#minecraft:enchantable/mining_loot",
+    {
+      "required": false,
+      "id": "quark:pickarang"
+    },
+    {
+      "required": false,
+      "id": "quark:flamerang"
+    }
+  ]
+}

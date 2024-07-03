@@ -19,37 +19,20 @@ package com.illusivesoulworks.veinmining;
 
 import com.illusivesoulworks.veinmining.common.network.CPacketState;
 import com.illusivesoulworks.veinmining.common.veinmining.VeinMiningEvents;
-import com.illusivesoulworks.veinmining.common.veinmining.enchantment.VeinMiningEnchantment;
-import java.util.ArrayList;
-import java.util.List;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.EnchantedBookItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.EnchantmentInstance;
 
 public class VeinMiningFabricMod implements ModInitializer {
 
-  public static Enchantment VEIN_MINING_ENCHANTMENT;
-
   @Override
   public void onInitialize() {
-    VEIN_MINING_ENCHANTMENT =
-        Registry.register(BuiltInRegistries.ENCHANTMENT, VeinMiningConstants.ENCHANTMENT_ID,
-            new VeinMiningEnchantment());
     ServerLifecycleEvents.SERVER_STARTED.register(server -> VeinMiningEvents.reloadDatapack());
     ServerLifecycleEvents.END_DATA_PACK_RELOAD.register(
         (server, resourceManager, success) -> VeinMiningEvents.reloadDatapack());
@@ -69,28 +52,6 @@ public class VeinMiningFabricMod implements ModInitializer {
 
       if (server != null) {
         server.execute(() -> CPacketState.handle(activate, player));
-      }
-    });
-    ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.INGREDIENTS).register(entries -> {
-
-      if (VEIN_MINING_ENCHANTMENT.isEnabled(entries.getEnabledFeatures())) {
-
-        if (VEIN_MINING_ENCHANTMENT instanceof VeinMiningEnchantment enchantment &&
-            enchantment.isAllowedOnBooks()) {
-          EnchantedBookItem.createForEnchantment(
-              new EnchantmentInstance(enchantment, enchantment.getMaxLevel()));
-          List<ItemStack> stacks = new ArrayList<>();
-
-          for (int i = enchantment.getMinLevel(); i <= enchantment.getMaxLevel(); i++) {
-            stacks.add(
-                EnchantedBookItem.createForEnchantment(new EnchantmentInstance(enchantment, i)));
-          }
-
-          for (ItemStack stack : stacks) {
-            entries.accept(stack, CreativeModeTab.TabVisibility.SEARCH_TAB_ONLY);
-          }
-          entries.accept(stacks.getLast(), CreativeModeTab.TabVisibility.PARENT_TAB_ONLY);
-        }
       }
     });
   }

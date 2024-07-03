@@ -58,59 +58,16 @@ import net.minecraftforge.registries.tags.ITagManager;
 public class ForgePlatform implements IPlatform {
 
   @Override
-  public Enchantment getVeinMiningEnchantment() {
-    return VeinMiningForgeMod.ENCHANTMENT.get();
-  }
-
-  @Override
-  public Optional<Enchantment> getEnchantment(ResourceLocation resourceLocation) {
-    return Optional.ofNullable(ForgeRegistries.ENCHANTMENTS.getValue(resourceLocation));
-  }
-
-  @Override
-  public Optional<Item> getItem(ResourceLocation resourceLocation) {
-    return Optional.ofNullable(ForgeRegistries.ITEMS.getValue(resourceLocation));
-  }
-
-  @Override
   public Optional<ResourceLocation> getResourceLocation(Block block) {
     return Optional.ofNullable(ForgeRegistries.BLOCKS.getKey(block));
   }
 
   @Override
-  public Map<String, Predicate<ItemStack>> buildEnchantableItems() {
-    Map<String, Predicate<ItemStack>> result = new HashMap<>();
-    result.put("is:tool", ForgePlatform::canToolAction);
-    result.put("is:pickaxe", stack -> canToolAction(ToolActions.PICKAXE_DIG, stack));
-    result.put("is:axe", stack -> canToolAction(ToolActions.AXE_DIG, stack));
-    result.put("is:hoe", stack -> canToolAction(ToolActions.HOE_DIG, stack));
-    result.put("is:shovel", stack -> canToolAction(ToolActions.SHOVEL_DIG, stack));
-    return ImmutableMap.copyOf(result);
-  }
-
-  @Override
-  public boolean canHarvestDrops(ServerPlayer playerEntity, BlockState state) {
+  public boolean canHarvestDrops(ServerPlayer playerEntity, BlockState state, BlockPos blockPos) {
     return ForgeHooks.isCorrectToolForDrops(state, playerEntity);
   }
 
-  private static boolean canToolAction(ToolAction toolAction, ItemStack stack) {
-    return stack.canPerformAction(toolAction);
-  }
-
-  private static boolean canToolAction(ItemStack stack) {
-    Set<ToolAction> actions =
-        Set.of(ToolActions.PICKAXE_DIG, ToolActions.AXE_DIG, ToolActions.HOE_DIG,
-            ToolActions.SHOVEL_DIG);
-
-    for (ToolAction action : actions) {
-
-      if (stack.canPerformAction(action)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
+  @Override
   public boolean harvest(ServerPlayer player, BlockPos pos, BlockPos originPos) {
     ServerLevel world = player.serverLevel();
     BlockState blockstate = world.getBlockState(pos);
@@ -171,30 +128,6 @@ public class ForgePlatform implements IPlatform {
         return true;
       }
     }
-  }
-
-  @Override
-  public Set<String> getItemsFromTag(ResourceLocation resourceLocation) {
-    Set<String> result = new HashSet<>();
-    ITagManager<Item> tagManager = ForgeRegistries.ITEMS.tags();
-
-    if (tagManager != null) {
-
-      for (Item item : tagManager.getTag(
-          tagManager.createOptionalTagKey(resourceLocation, new HashSet<>()))) {
-        ResourceLocation rl = ForgeRegistries.ITEMS.getKey(item);
-
-        if (rl != null) {
-          result.add(rl.toString());
-        }
-      }
-    }
-    return result;
-  }
-
-  @Override
-  public List<String> getDefaultItemsConfig() {
-    return Arrays.asList("is:tool", "quark:pickarang", "quark:flamerang");
   }
 
   private static boolean removeBlock(Player player, BlockPos pos, boolean canHarvest) {
